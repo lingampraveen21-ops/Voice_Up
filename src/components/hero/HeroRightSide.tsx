@@ -49,12 +49,12 @@ export function HeroRightSide() {
 
                     {/* Typing Speech Bubble */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                        animate={{ opacity: 1, scale: 1, x: 40 }}
+                        initial={{ opacity: 0, scale: 0.8, x: -10, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, x: 16, y: -16 }}
                         transition={{ delay: 1, duration: 0.5 }}
-                        className="absolute top-0 right-0 translate-x-3/4 -translate-y-1/2"
+                        className="absolute top-4 left-full z-20 origin-bottom-left"
                     >
-                        <div className="glass px-4 py-3 rounded-2xl rounded-bl-sm whitespace-nowrap text-white font-medium shadow-xl">
+                        <div className="glass px-5 py-3 rounded-2xl rounded-bl-sm whitespace-nowrap text-white font-medium shadow-2xl border border-white/10">
                             {displayText}
                             <span className="animate-pulse ml-1 opacity-50">|</span>
                         </div>
