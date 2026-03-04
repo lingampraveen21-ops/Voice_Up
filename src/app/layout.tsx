@@ -2,6 +2,8 @@ import QueryProvider from "@/components/providers/QueryProvider";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { AuthInitializer } from "@/components/auth/AuthInitializer";
+import { GuestSignupModal } from "@/components/auth/GuestSignupModal";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -37,7 +39,9 @@ export default function RootLayout({
       <body className="font-sans">
         <SmoothScrollProvider>
           <QueryProvider>
+            <AuthInitializer />
             {children}
+            <GuestSignupModal />
             <Toaster />
           </QueryProvider>
         </SmoothScrollProvider>
