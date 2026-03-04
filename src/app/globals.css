@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 33% 4%;
+    /* #080810 */
+    --foreground: 210 40% 98%;
+
+    --surface: 240 27% 8%;
+    /* #0f0f1a */
+    --surface-raised: 240 31% 12%;
+    /* #16162a */
+
+    --primary: 243 100% 69%;
+    /* #6c63ff */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 348 100% 70%;
+    /* #ff6584 */
+    --secondary-foreground: 210 40% 98%;
+
+    --success: 160 59% 55%;
+    /* #4ecca3 */
+    --warning: 42 100% 70%;
+    /* #ffd166 */
+    --error: 349 100% 65%;
+    /* #ff4d6d */
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-[hsl(var(--surface-raised))];
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  /* Custom Scrollbar (thin, violet colored) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(108, 99, 255, 0.4);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(108, 99, 255, 0.8);
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(15, 15, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(108, 99, 255, 0.12);
+    border-radius: 20px;
+  }
+}
