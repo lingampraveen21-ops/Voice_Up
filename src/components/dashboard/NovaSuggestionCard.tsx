@@ -3,6 +3,7 @@
 import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight } from 'lucide-react'
+import { RiveNovaAvatar } from '@/components/ui/RiveNovaAvatar'
 
 interface NovaSuggestionCardProps {
     scores: {
@@ -13,25 +14,28 @@ interface NovaSuggestionCardProps {
     }
 }
 
+import { useTranslations } from 'next-intl'
+
 export const NovaSuggestionCard: FC<NovaSuggestionCardProps> = ({ scores }) => {
+    const t = useTranslations("Dashboard")
     // Determine personalized message based on the lowest scoring skill
     const minScore = Math.min(scores.reading, scores.writing, scores.listening, scores.speaking)
 
-    let suggestion = "Ready for today's lesson? Let's keep the momentum going!"
-    let actionText = "Start Lesson"
+    let suggestion = t("suggestionDefault")
+    let actionText = t("actionDefault")
 
     if (minScore === scores.writing) {
-        suggestion = "I noticed your Writing score could use a boost. Try a writing exercise today!"
-        actionText = "Practice Writing"
+        suggestion = t("suggestionWriting")
+        actionText = t("actionWriting")
     } else if (minScore === scores.speaking) {
-        suggestion = "Let's work on your pronunciation today. Your speaking skills are close to a breakthrough!"
-        actionText = "Speaking Lab"
+        suggestion = t("suggestionSpeaking")
+        actionText = t("actionSpeaking")
     } else if (minScore === scores.listening) {
-        suggestion = "Listening comprehension is key. I've queued up an audio challenge for you."
-        actionText = "Audio Challenge"
+        suggestion = t("suggestionListening")
+        actionText = t("actionListening")
     } else if (minScore === scores.reading) {
-        suggestion = "Taking some time to read structural English will significantly raise your baseline."
-        actionText = "Read Article"
+        suggestion = t("suggestionReading")
+        actionText = t("actionReading")
     }
 
     return (
@@ -45,13 +49,9 @@ export const NovaSuggestionCard: FC<NovaSuggestionCardProps> = ({ scores }) => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[50px] pointer-events-none" />
 
             <div className="flex items-start gap-4 z-10 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary p-[2px] shadow-[0_0_15px_rgba(168,85,247,0.4)] shrink-0">
-                    <div className="w-full h-full bg-[#0f0f1a] rounded-full flex items-center justify-center overflow-hidden">
-                        <div className="w-6 h-6 rounded-full bg-primary/40 animate-pulse" />
-                    </div>
-                </div>
+                <RiveNovaAvatar currentState="happy" className="w-12 h-12 shrink-0" />
                 <div>
-                    <p className="text-sm font-bold text-white flex items-center gap-1"><Sparkles className="w-4 h-4 text-primary" /> NOVA Suggests</p>
+                    <p className="text-sm font-bold text-white flex items-center gap-1"><Sparkles className="w-4 h-4 text-primary" /> {t("novaSuggests")}</p>
                     <p className="text-sm text-zinc-300 mt-2 leading-relaxed">
                         &quot;{suggestion}&quot;
                     </p>

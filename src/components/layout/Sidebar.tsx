@@ -4,23 +4,26 @@ import { Mic, BookOpen, Trophy, Map, LayoutDashboard, BarChart2, Settings, User 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-const NAV_ITEMS = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Learn", href: "/learn", icon: BookOpen },
-    { name: "Speak", href: "/practice/speaking", icon: Mic, isAction: true },
-    { name: "Challenges", href: "/challenges", icon: Trophy },
-    { name: "Roadmap", href: "/roadmap", icon: Map },
-    { name: "Progress", href: "/progress", icon: BarChart2 },
-];
-
-const SETTINGS_ITEMS = [
-    { name: "Settings", href: "/settings", icon: Settings },
-    { name: "Profile", href: "/profile", icon: User },
-];
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Sidebar() {
+    const t = useTranslations("Sidebar");
     const pathname = usePathname();
+
+    const NAV_ITEMS = [
+        { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
+        { name: t("learn"), href: "/learn", icon: BookOpen },
+        { name: t("speak"), href: "/practice/speaking", icon: Mic, isAction: true },
+        { name: t("challenges"), href: "/challenges", icon: Trophy },
+        { name: t("roadmap"), href: "/roadmap", icon: Map },
+        { name: t("progress"), href: "/progress", icon: BarChart2 },
+    ];
+
+    const SETTINGS_ITEMS = [
+        { name: t("settings"), href: "/settings", icon: Settings },
+        { name: t("profile"), href: "/profile", icon: User },
+    ];
 
     return (
         <>
@@ -28,7 +31,7 @@ export function Sidebar() {
                 <div className="text-2xl font-bold font-heading text-primary mb-8 px-4">VoiceUp</div>
                 <nav className="flex-1 space-y-2">
                     {NAV_ITEMS.map((item) => (
-                        <Link key={item.name} href={item.href}>
+                        <Link key={item.href} href={item.href}>
                             <div
                                 className={cn(
                                     "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
@@ -46,7 +49,7 @@ export function Sidebar() {
 
                 <div className="mt-auto border-t border-white/5 pt-4 space-y-2">
                     {SETTINGS_ITEMS.map((item) => (
-                        <Link key={item.name} href={item.href}>
+                        <Link key={item.href} href={item.href}>
                             <div
                                 className={cn(
                                     "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
@@ -60,12 +63,15 @@ export function Sidebar() {
                             </div>
                         </Link>
                     ))}
+                    <div className="px-4 py-3">
+                        <LanguageSwitcher />
+                    </div>
                 </div>
             </div>
 
             <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-raised border-t border-white/5 flex items-center justify-around z-50">
                 {NAV_ITEMS.slice(0, 5).map((item) => (
-                    <Link key={item.name} href={item.href} className="flex flex-col items-center">
+                    <Link key={item.href} href={item.href} className="flex flex-col items-center">
                         <div
                             className={cn(
                                 "p-2 rounded-full transition-colors",

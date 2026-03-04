@@ -3,7 +3,7 @@ import { GoogleGenAI, Type, Schema } from '@google/genai'
 
 export async function POST(req: Request) {
     try {
-        const { userMessage, conversationHistory, topic, userLevel } = await req.json()
+        const { userMessage, conversationHistory, topic, userLevel, locale = 'en' } = await req.json()
 
         if (!userMessage) {
             return NextResponse.json({ error: "userMessage is required" }, { status: 400 })
@@ -17,20 +17,30 @@ export async function POST(req: Request) {
         // Initialize the official Gemini SDK
         const ai = new GoogleGenAI({ apiKey: apiKey })
 
+        // Language specific context
+        const localeNames: Record<string, string> = {
+            en: 'English',
+            hi: 'Hindi',
+            es: 'Spanish',
+            fr: 'French',
+            pt: 'Portuguese'
+        }
+
         // Build the system prompt enforcing NOVA's behavioral guidelines
         const systemInstruction = `
     You are NOVA, VoiceUp's warm, patient AI English tutor.
     User level: ${userLevel || 'Beginner'}. Topic: ${topic || 'Casual Conversation'}.
+    User's interface language: ${localeNames[locale] || 'English'}.
     
     Your behavior:
-    1. If user speaks non-English → respond in their language asking them to try in English. Be kind, never frustrated.
-    2. If a grammar mistake is detected → gently echo the correct version in 'novaResponse'. Say: "Almost! We say '[correct version]'. Can you try that?" Never say WRONG.
-    3. If answer is correct → celebrate warmly. Move forward.
-    4. If confused → re-explain with a simpler analogy.
+    1. If user speaks non-English → respond in their interface language (${localeNames[locale] || 'English'}) asking them to try in English. Be kind, never frustrated.
+    2. If the user is struggling, you can provide brief explanations or translations in their language (${localeNames[locale] || 'English'}), but always encourage English practice.
+    3. If a grammar mistake is detected → gently echo the correct version in 'novaResponse'. Say: "Almost! We say '[correct version]'. Can you try that?" Never say WRONG.
+    4. If answer is correct → celebrate warmly. Move forward.
     5. Always end with a clear question to keep them talking.
     6. Keep responses under 3 sentences. Be conversational.
     7. Track mistakes and reference them: "Earlier you said X..."
-
+ 
     You MUST return your response as a JSON object adhering to the schema provided.
     `
 

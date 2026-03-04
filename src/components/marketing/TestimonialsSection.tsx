@@ -3,26 +3,30 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Star } from "lucide-react";
 import Image from "next/image";
 
-const TESTIMONIALS = [
-    { name: "Rahul Sharma", country: "🇮🇳", role: "Software Engineer", quote: "Got my dream job at a US startup. NOVA built my confidence to speak freely without translating in my head." },
-    { name: "Ana Silva", country: "🇧🇷", role: "UX Designer", quote: "The real-time grammar correction is mind-blowing. It's like having a native speaker correct you gently." },
-    { name: "Yuki Tanaka", country: "🇯🇵", role: "Sales Manager", quote: "I no longer fear English meetings. The practice loops and daily challenges forced me to speak." },
-    { name: "Carlos Mendoza", country: "🇲🇽", role: "Student", quote: "I tried typing-based apps for years and couldn't speak. VoiceUp changed that in 3 months." },
-    { name: "Sarah Müller", country: "🇩🇪", role: "Marketing Lead", quote: "Perfect preparation for international conferences. Fast, effective, and actually fun to use." },
-    { name: "David Chen", country: "🇹🇼", role: "Frontend Developer", quote: "VoiceUp's interview scenarios are exactly what you need. Zero anxiety now when taking calls." },
-    { name: "Emily Kim", country: "🇰🇷", role: "Product Manager", quote: "The best English learning investment I've never had to pay for. Absolutely incredible." },
-    { name: "Omar Hassan", country: "🇪🇬", role: "Cloud Architect", quote: "Fluent English was the missing piece in my career. NOVA helped me find it." },
-];
+import { useTranslations } from "next-intl";
 
 export function TestimonialsSection() {
+    const t = useTranslations("Testimonials");
+
+    const TESTIMONIALS = [
+        { name: "Rahul Sharma", country: "🇮🇳", role: "Software Engineer", quote: t("quote1") },
+        { name: "Ana Silva", country: "🇧🇷", role: "UX Designer", quote: t("quote2") },
+        { name: "Yuki Tanaka", country: "🇯🇵", role: "Sales Manager", quote: t("quote3") },
+        { name: "Carlos Mendoza", country: "🇲🇽", role: "Student", quote: t("quote4") },
+        { name: "Sarah Müller", country: "🇩🇪", role: "Marketing Lead", quote: t("quote5") },
+        { name: "David Chen", country: "🇹🇼", role: "Frontend Developer", quote: t("quote6") },
+        { name: "Emily Kim", country: "🇰🇷", role: "Product Manager", quote: t("quote7") },
+        { name: "Omar Hassan", country: "🇪🇬", role: "Cloud Architect", quote: t("quote8") },
+    ];
+
     const row1 = TESTIMONIALS.slice(0, 4);
     const row2 = TESTIMONIALS.slice(4, 8);
 
     return (
         <section className="py-24 relative overflow-hidden">
             <div className="container mx-auto px-4 md:px-8 mb-16 text-center">
-                <h2 className="text-3xl md:text-5xl font-heading font-bold mb-4">Loved by learners worldwide</h2>
-                <p className="text-lg text-muted-foreground">Join 500,000+ people who found their voice with VoiceUp.</p>
+                <h2 className="text-3xl md:text-5xl font-heading font-bold mb-4">{t("title")}</h2>
+                <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
             </div>
 
             <div className="flex flex-col gap-8 relative overflow-hidden">

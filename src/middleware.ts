@@ -1,9 +1,17 @@
-import type { NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
 import { updateSession } from './lib/supabase/middleware';
+import { routing } from './navigation';
+
+const intlMiddleware = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
-    // 1. Refresh the Supabase session so auth works seamlessly
-    return await updateSession(request);
+    // 1. Run next-intl middleware first to handle locale detection and redirection
+    const response = intlMiddleware(request);
+
+    // 2. Refresh the Supabase session and handle auth redirects
+    // We pass the response from intlMiddleware so it keeps the locale cookies/headers
+    return await updateSession(request, response);
 }
 
 export const config = {

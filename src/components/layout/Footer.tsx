@@ -1,7 +1,11 @@
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { Github, Linkedin, Twitter } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
+    const t = useTranslations("Footer");
+    const nt = useTranslations("Navbar");
+
     return (
         <footer className="bg-background border-t border-white/5 pt-16 pb-8">
             <div className="container mx-auto px-4 md:px-8">
@@ -12,35 +16,35 @@ export function Footer() {
                             <span className="text-2xl font-bold font-heading text-white">VoiceUp</span>
                         </Link>
                         <p className="text-muted-foreground max-w-sm">
-                            The AI-powered, voice-first English learning platform designed to help you speak with confidence and land your dream job.
+                            {t("tagline")}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-4">
-                        <h4 className="font-heading font-bold text-white mb-2">Platform</h4>
-                        <Link href="#features" className="text-muted-foreground hover:text-white transition-colors text-sm">Features</Link>
-                        <Link href="#how-it-works" className="text-muted-foreground hover:text-white transition-colors text-sm">How it Works</Link>
-                        <Link href="#teams" className="text-muted-foreground hover:text-white transition-colors text-sm">For Teams</Link>
-                        <Link href="/login" className="text-muted-foreground hover:text-white transition-colors text-sm">Login</Link>
+                        <h4 className="font-heading font-bold text-white mb-2">{t("platform")}</h4>
+                        <Link href="#features" className="text-muted-foreground hover:text-white transition-colors text-sm">{nt("features")}</Link>
+                        <Link href="#how-it-works" className="text-muted-foreground hover:text-white transition-colors text-sm">{nt("howItWorks")}</Link>
+                        <Link href="#teams" className="text-muted-foreground hover:text-white transition-colors text-sm">{nt("forTeams")}</Link>
+                        <Link href="/login" className="text-muted-foreground hover:text-white transition-colors text-sm">{nt("login")}</Link>
                     </div>
 
                     <div className="flex flex-col gap-4">
-                        <h4 className="font-heading font-bold text-white mb-2">Legal</h4>
-                        <Link href="#" className="text-muted-foreground hover:text-white transition-colors text-sm">About Us</Link>
-                        <Link href="#" className="text-muted-foreground hover:text-white transition-colors text-sm">Contact</Link>
-                        <Link href="#" className="text-muted-foreground hover:text-white transition-colors text-sm">Privacy Policy</Link>
-                        <Link href="#" className="text-muted-foreground hover:text-white transition-colors text-sm">Terms of Service</Link>
+                        <h4 className="font-heading font-bold text-white mb-2">{t("legal")}</h4>
+                        <Link href="#" className="text-muted-foreground hover:text-white transition-colors text-sm">{t("aboutUs")}</Link>
+                        <Link href="#" className="text-muted-foreground hover:text-white transition-colors text-sm">{t("contact")}</Link>
+                        <Link href="/privacy" className="text-muted-foreground hover:text-white transition-colors text-sm">{t("privacy")}</Link>
+                        <Link href="/terms" className="text-muted-foreground hover:text-white transition-colors text-sm">{t("terms")}</Link>
                     </div>
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 text-sm text-muted-foreground gap-4 text-center md:text-left">
-                    <p>Made with ❤️ for learners everywhere.</p>
+                    <p>{t("madeWith")}</p>
                     <div className="flex items-center gap-4">
                         <a href="#" className="hover:text-white transition-colors"><Twitter className="h-5 w-5" /></a>
                         <a href="#" className="hover:text-white transition-colors"><Linkedin className="h-5 w-5" /></a>
                         <a href="#" className="hover:text-white transition-colors"><Github className="h-5 w-5" /></a>
                     </div>
-                    <p>© {new Date().getFullYear()} VoiceUp Inc. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} VoiceUp Inc. {t("rights")}</p>
                 </div>
             </div>
         </footer>

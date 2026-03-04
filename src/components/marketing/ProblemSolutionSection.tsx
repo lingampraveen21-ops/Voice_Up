@@ -6,9 +6,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 import { MicOff, Mic } from "lucide-react";
 
+import { useTranslations } from "next-intl";
+
 gsap.registerPlugin(ScrollTrigger);
 
 export function ProblemSolutionSection() {
+    const tp = useTranslations("Problem");
+    const ts = useTranslations("Solution");
     const containerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
@@ -45,10 +49,10 @@ export function ProblemSolutionSection() {
                             <MicOff className="h-8 w-8" />
                         </div>
                         <h2 className="text-3xl md:text-4xl font-heading font-bold text-white/50 line-through decoration-error/50 decoration-2">
-                            Every other app lets you stay silent.
+                            {tp("heading")}
                         </h2>
                         <p className="text-muted-foreground text-lg">
-                            Typing &quot;Hello&quot; won&apos;t help you pass a speaking interview. Passive learning creates an illusion of progress.
+                            {tp("subtext")}
                         </p>
                     </div>
 
@@ -61,10 +65,10 @@ export function ProblemSolutionSection() {
                             <Mic className="h-8 w-8" />
                         </div>
                         <h2 className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary relative z-10">
-                            VoiceUp makes you speak.
+                            {ts("heading")}
                         </h2>
                         <p className="text-lg text-white/80 relative z-10">
-                            Speak to NOVA, get instant grammar correction, and see your confidence soar in real-time.
+                            {ts("subtext")}
                         </p>
                     </div>
 

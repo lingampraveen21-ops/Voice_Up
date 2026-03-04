@@ -8,9 +8,12 @@ interface StreakCardProps {
     freezeAvailable: boolean
 }
 
+import { useTranslations } from 'next-intl'
+
 export const StreakCard: FC<StreakCardProps> = ({ streak, freezeAvailable }) => {
+    const t = useTranslations("Dashboard")
     // Determine weekly dots based on streak (mocked past 7 days logic for visual)
-    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+    const days = [t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat'), t('sun')]
     const filledCount = Math.min(streak, 7)
     const activeDays = Array.from({ length: 7 }).map((_, i) => i < filledCount)
 
@@ -26,12 +29,12 @@ export const StreakCard: FC<StreakCardProps> = ({ streak, freezeAvailable }) => 
 
             <div className="flex items-start justify-between mb-4 z-10">
                 <div>
-                    <p className="text-zinc-400 font-medium text-sm mb-1 uppercase tracking-wider">Current Streak</p>
+                    <p className="text-zinc-400 font-medium text-sm mb-1 uppercase tracking-wider">{t("currentStreak")}</p>
                     <div className="flex items-baseline gap-2">
                         <h2 className="text-4xl font-black font-heading text-white drop-shadow-lg">
                             <CountUp end={streak} duration={2} />
                         </h2>
-                        <span className="text-zinc-400 font-medium tracking-wide">Days</span>
+                        <span className="text-zinc-400 font-medium tracking-wide">{t("daysLabel")}</span>
                     </div>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400/20 to-red-500/20 border border-orange-500/20 flex items-center justify-center">
@@ -51,7 +54,7 @@ export const StreakCard: FC<StreakCardProps> = ({ streak, freezeAvailable }) => 
 
                 {freezeAvailable && (
                     <div className="mt-4 text-xs inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-lg font-medium">
-                        <span className="text-cyan-300">🧊</span> Freeze Available
+                        <span className="text-cyan-300">🧊</span> {t("freezeAvailable")}
                     </div>
                 )}
             </div>

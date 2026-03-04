@@ -18,16 +18,19 @@ interface LessonQuizProps {
 export function LessonQuiz({ lesson, onBack }: LessonQuizProps) {
     const router = useRouter()
     const supabase = createClient()
-    const { isSupported, startListening, stopListening } = useVoiceRecorder()
+    const {
+        isSupported,
+        startRecording: startListening,
+        stopRecording: stopListening,
+        isRecording: isListening,
+        transcript
+    } = useVoiceRecorder()
     const { speak } = useSpeechSynthesis()
 
     const [answers, setAnswers] = useState<Record<string, string>>({})
     const [submitted, setSubmitted] = useState(false)
     const [score, setScore] = useState(0)
     const [saving, setSaving] = useState(false)
-    // Voice answer placeholder — isListening/transcript come from useVoiceRecorder
-    const transcript = ''
-    const isListening = false
 
     const handleMCQ = (qId: string, option: string) => {
         if (!submitted) setAnswers(prev => ({ ...prev, [qId]: option }))

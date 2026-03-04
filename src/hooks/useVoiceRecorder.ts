@@ -15,7 +15,7 @@ declare global {
 }
 
 export const useVoiceRecorder = () => {
-    const { setListening, setTranscript } = useNovaStore()
+    const { isListening, transcript, setListening, setTranscript } = useNovaStore()
     const [error, setError] = useState<string | null>(null)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recognitionRef = useRef<any>(null)
@@ -108,8 +108,10 @@ export const useVoiceRecorder = () => {
 
     return {
         isSupported,
-        startListening,
-        stopListening,
+        isRecording: isListening,
+        transcript,
+        startRecording: startListening,
+        stopRecording: stopListening,
         error
     }
 }

@@ -4,7 +4,10 @@ import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Target } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
+
 export const DailyGoalRing: FC = () => {
+    const t = useTranslations("Dashboard")
     // Mock daily goal values for the grid
     const practicedMin = 18
     const goalMin = 20
@@ -25,7 +28,7 @@ export const DailyGoalRing: FC = () => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150px] h-[150px] bg-cyan-500/10 blur-[60px] pointer-events-none group-hover:bg-cyan-500/20 transition-colors" />
 
             <div className="w-full flex justify-between items-start absolute top-6 left-6 right-6 z-10">
-                <p className="text-zinc-400 font-medium text-sm uppercase tracking-wider">Daily Goal</p>
+                <p className="text-zinc-400 font-medium text-sm uppercase tracking-wider">{t("dailyGoal")}</p>
                 <Target className="w-5 h-5 text-zinc-500" />
             </div>
 
@@ -45,7 +48,7 @@ export const DailyGoalRing: FC = () => {
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center">
                     <span className="text-3xl font-black font-heading text-white">{practicedMin}</span>
-                    <span className="text-xs text-zinc-400 font-medium">/ {goalMin} min</span>
+                    <span className="text-xs text-zinc-400 font-medium">/ {goalMin} {t("minLabel")}</span>
                 </div>
             </div>
 

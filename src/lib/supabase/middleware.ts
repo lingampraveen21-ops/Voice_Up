@@ -1,8 +1,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function updateSession(request: NextRequest) {
-    let supabaseResponse = NextResponse.next({
+export async function updateSession(request: NextRequest, response?: NextResponse) {
+    let supabaseResponse = response || NextResponse.next({
         request: {
             headers: request.headers,
         },
@@ -37,39 +37,49 @@ export async function updateSession(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     const path = request.nextUrl.pathname
 
+    // Extract locale from path (e.g., /en/dashboard -> /dashboard)
+    const segments = path.split('/')
+    const locale = segments[1]
+    const locales = ['en', 'hi', 'es', 'pt', 'fr']
+    const isLocalePath = locales.includes(locale)
+    const subPath = isLocalePath ? '/' + segments.slice(2).join('/') : path
+
     // Public paths that do not require authentication
-    const isPublicAuthPath = path.startsWith('/login') || path.startsWith('/signup') || path.startsWith('/auth')
-    const isRootPaths = path === '/'
+    const isPublicAuthPath = subPath.startsWith('/login') || subPath.startsWith('/signup') || subPath.startsWith('/auth')
+    const isRootPaths = subPath === '/' || subPath === ''
 
     // Guest-friendly learn paths
-    const isGuestLessonPath = path.startsWith('/learn/lesson-1') || path.startsWith('/learn/lesson-2')
+    const isGuestLessonPath = subPath.startsWith('/learn/lesson-1') || subPath.startsWith('/learn/lesson-2')
 
     if (!user && !isPublicAuthPath && !isRootPaths && !isGuestLessonPath && !path.startsWith('/_next')) {
         // Attempting to access protected paths without user -> redirect to login
-        return NextResponse.redirect(new URL('/login', request.url))
+        const loginUrl = new URL(`/${locale || 'en'}/login`, request.url)
+        return NextResponse.redirect(loginUrl)
     }
 
     if (user) {
-        if (isPublicAuthPath && !path.startsWith('/auth/reset-password')) {
+        if (isPublicAuthPath && !subPath.startsWith('/auth/reset-password')) {
             // Logged in users trying to access login/signup -> redirect to dashboard
-            return NextResponse.redirect(new URL('/dashboard', request.url))
+            const dashboardUrl = new URL(`/${locale || 'en'}/dashboard`, request.url)
+            return NextResponse.redirect(dashboardUrl)
         }
 
-        /* 
-         * Requirement: Redirect to /onboarding if placement_done is false.
-         * We selectively query the profiles table to see placement_done status. 
-         * To prevent an infinite redirect loop, we don't do this if they're already on /onboarding.
-         */
-        if (path !== '/onboarding' && !path.startsWith('/_next') && !path.startsWith('/auth/callback')) {
+        if (subPath !== '/onboarding' && !path.startsWith('/_next') && !subPath.startsWith('/auth/callback')) {
             const { data: profile } = await supabase
                 .from('profiles')
-                .select('placement_done')
+                .select('placement_done, preferred_language')
                 .eq('id', user.id)
                 .single()
 
+            // Handle onboarding redirect
             if (profile && profile.placement_done === false) {
-                return NextResponse.redirect(new URL('/onboarding', request.url))
+                const onboardingUrl = new URL(`/${locale || 'en'}/onboarding`, request.url)
+                return NextResponse.redirect(onboardingUrl)
             }
+
+            // Auto-detect language if profile has it and path doesn't match? 
+            // next-intl handles the cookie, so we usually don't need to force redirect here
+            // unless we want to sync the URL locale with the profile locale.
         }
     }
 

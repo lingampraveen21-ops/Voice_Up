@@ -4,17 +4,20 @@ import { NovaAvatar } from "@/components/ui/NovaAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
-const DEMO_SEQUENCE = [
-    { type: "user", text: "I am go to learn Python 🐍", delay: 1000 },
-    { type: "nova", text: "Almost! Say: 'I am going to learn Python' 😊", delay: 2500 },
-    { type: "clear", delay: 5000 },
-    { type: "user", text: "Can you help me for interview?", delay: 1000 },
-    { type: "nova", text: "Sure! Try: 'Can you help me with my interview?' 🎯", delay: 2500 },
-    { type: "clear", delay: 5000 },
-];
+import { useTranslations } from "next-intl";
 
 export function NovaDemoSection() {
+    const t = useTranslations("NovaDemo");
     const [stepIndex, setStepIndex] = useState(0);
+
+    const DEMO_SEQUENCE = [
+        { type: "user", text: t("userMsg1"), delay: 1000 },
+        { type: "nova", text: t("novaMsg1"), delay: 2500 },
+        { type: "clear", delay: 5000 },
+        { type: "user", text: t("userMsg2"), delay: 1000 },
+        { type: "nova", text: t("novaMsg2"), delay: 2500 },
+        { type: "clear", delay: 5000 },
+    ];
 
     useEffect(() => {
         const currentStep = DEMO_SEQUENCE[stepIndex];
@@ -22,7 +25,7 @@ export function NovaDemoSection() {
             setStepIndex((prev) => (prev + 1) % DEMO_SEQUENCE.length);
         }, currentStep.delay);
         return () => clearTimeout(timer);
-    }, [stepIndex]);
+    }, [stepIndex, DEMO_SEQUENCE]);
 
     const isUserVisible = stepIndex === 0 || stepIndex === 1 || stepIndex === 3 || stepIndex === 4;
     const isNovaVisible = stepIndex === 1 || stepIndex === 4;
@@ -39,8 +42,8 @@ export function NovaDemoSection() {
         <section className="py-24 relative overflow-hidden bg-surface/50 border-y border-white/5">
             <div className="container mx-auto px-4 md:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">Real-time Grammar Correction</h2>
-                    <p className="text-lg text-muted-foreground">NOVA catches your mistakes and gently corrects you instantly, so you learn by doing.</p>
+                    <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">{t("title")}</h2>
+                    <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
                 </div>
 
                 <div className="relative max-w-2xl mx-auto h-[400px] flex items-center justify-center">

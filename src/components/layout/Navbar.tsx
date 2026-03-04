@@ -6,18 +6,22 @@ import { cn } from "@/lib/utils";
 import { useLenis } from "lenis/react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { Link, usePathname } from "@/navigation";
 import { useState } from "react";
-
-const NAV_LINKS = [
-    { name: "Features", href: "#features" },
-    { name: "How it Works", href: "#how-it-works" },
-    { name: "For Teams", href: "#teams" },
-];
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "../shared/ThemeToggle";
+import { useTranslations } from "next-intl";
 
 export function Navbar() {
+    const t = useTranslations("Navbar");
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const NAV_LINKS = [
+        { name: t("features"), href: "#features" },
+        { name: t("howItWorks"), href: "#how-it-works" },
+        { name: t("forTeams"), href: "#teams" },
+    ];
 
     useLenis(({ scroll }) => {
         setIsScrolled(scroll > 50);
@@ -38,7 +42,7 @@ export function Navbar() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
                         <span className="text-2xl">🎙️</span>
-                        <span className="text-2xl font-bold font-heading text-white">VoiceUp</span>
+                        <span className="text-2xl font-bold font-heading text-foreground">VoiceUp</span>
                     </Link>
 
                     {/* Desktop Links */}
@@ -54,27 +58,33 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* Desktop Buttons */}
+                    {/* Desktop Range & Buttons */}
                     <div className="hidden md:flex items-center gap-4">
+                        <ThemeToggle />
+                        <LanguageSwitcher />
                         <Link href="/login">
                             <GhostButton className="h-10 px-4 py-2 text-sm border-white/20 text-white hover:bg-white/10 hover:border-white/40">
-                                Login
+                                {t("login")}
                             </GhostButton>
                         </Link>
                         <Link href="/signup">
                             <GradientButton className="h-10 px-4 py-2 text-sm">
-                                Try Free →
+                                {t("signUp")}
                             </GradientButton>
                         </Link>
                     </div>
 
                     {/* Mobile Menu Toggle */}
-                    <button
-                        className="md:hidden text-white"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                    </button>
+                    <div className="flex items-center gap-4 md:hidden">
+                        <ThemeToggle />
+                        <LanguageSwitcher />
+                        <button
+                            className="text-white"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        </button>
+                    </div>
                 </div>
             </motion.nav>
 
@@ -102,10 +112,10 @@ export function Navbar() {
                         <div className="h-px w-full bg-white/10 my-4" />
                         <div className="flex flex-col gap-4">
                             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                                <GhostButton className="w-full justify-center">Login</GhostButton>
+                                <GhostButton className="w-full justify-center">{t("login")}</GhostButton>
                             </Link>
                             <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                                <GradientButton className="w-full justify-center">Try Free →</GradientButton>
+                                <GradientButton className="w-full justify-center">{t("signUp")}</GradientButton>
                             </Link>
                         </div>
                     </motion.div>

@@ -7,34 +7,37 @@ import { Mic, Bot, TrendingUp } from "lucide-react";
 import { useRef } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 
+import { useTranslations } from "next-intl";
+
 gsap.registerPlugin(ScrollTrigger);
 
-const STEPS = [
-    {
-        icon: Mic,
-        title: "1. Speak",
-        description: "Open your mic and talk naturally. No typing allowed.",
-        color: "text-primary",
-        bg: "bg-primary/20",
-    },
-    {
-        icon: Bot,
-        title: "2. NOVA Listens",
-        description: "AI corrects your grammar and pronunciation instantly.",
-        color: "text-secondary",
-        bg: "bg-secondary/20",
-    },
-    {
-        icon: TrendingUp,
-        title: "3. You Improve",
-        description: "See your fluency scores grow daily on your dashboard.",
-        color: "text-success",
-        bg: "bg-success/20",
-    },
-];
-
 export function HowItWorksSection() {
+    const t = useTranslations("HowItWorks");
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const STEPS = [
+        {
+            icon: Mic,
+            title: t("step1Title"),
+            description: t("step1Desc"),
+            color: "text-primary",
+            bg: "bg-primary/20",
+        },
+        {
+            icon: Bot,
+            title: t("step2Title"),
+            description: t("step2Desc"),
+            color: "text-secondary",
+            bg: "bg-secondary/20",
+        },
+        {
+            icon: TrendingUp,
+            title: t("step3Title"),
+            description: t("step3Desc"),
+            color: "text-success",
+            bg: "bg-success/20",
+        },
+    ];
 
     useGSAP(() => {
         if (!containerRef.current) return;
@@ -56,8 +59,8 @@ export function HowItWorksSection() {
         <section id="how-it-works" className="py-24 relative" ref={containerRef}>
             <div className="container mx-auto px-4 md:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">How it Works</h2>
-                    <p className="text-lg text-muted-foreground">Three simple steps to fluency. It feels like chatting with a friend who happens to be a perfect English teacher.</p>
+                    <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">{t("title")}</h2>
+                    <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">

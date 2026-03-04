@@ -14,12 +14,15 @@ interface SkillRadarChartProps {
     }
 }
 
+import { useTranslations } from 'next-intl'
+
 export const SkillRadarChart: FC<SkillRadarChartProps> = ({ scores }) => {
+    const t = useTranslations("Dashboard")
     const data = [
-        { subject: 'Speaking', A: scores.speaking, fullMark: 100 },
-        { subject: 'Listening', A: scores.listening, fullMark: 100 },
-        { subject: 'Reading', A: scores.reading, fullMark: 100 },
-        { subject: 'Writing', A: scores.writing, fullMark: 100 },
+        { subject: t('speaking'), A: scores.speaking, fullMark: 100 },
+        { subject: t('listening'), A: scores.listening, fullMark: 100 },
+        { subject: t('reading'), A: scores.reading, fullMark: 100 },
+        { subject: t('writing'), A: scores.writing, fullMark: 100 },
     ];
 
     return (
@@ -34,7 +37,7 @@ export const SkillRadarChart: FC<SkillRadarChartProps> = ({ scores }) => {
 
             <div className="w-full flex justify-between items-center mb-2 z-10">
                 <div className="flex items-center gap-2 text-zinc-400 font-medium text-sm tracking-wider uppercase">
-                    <Activity className="w-4 h-4" /> Skill Radar
+                    <Activity className="w-4 h-4" /> {t("skillRadar")}
                 </div>
             </div>
 

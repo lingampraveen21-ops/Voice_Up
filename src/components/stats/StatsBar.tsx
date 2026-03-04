@@ -6,9 +6,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 import NumberTicker from "@/components/ui/NumberTicker";
 
+import { useTranslations } from "next-intl";
+
 gsap.registerPlugin(ScrollTrigger);
 
 export function StatsBar() {
+    const t = useTranslations("Stats");
     const containerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
@@ -35,7 +38,7 @@ export function StatsBar() {
                         <NumberTicker value={500000} />
                         <span className="text-secondary ml-1">+</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">Learners</p>
+                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">{t("learners")}</p>
                 </div>
 
                 <div className="flex flex-col items-center justify-center p-2 pt-6 md:pt-2">
@@ -43,7 +46,7 @@ export function StatsBar() {
                         <NumberTicker value={50} />
                         <span className="text-secondary ml-1">+</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">Countries</p>
+                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">{t("countries")}</p>
                 </div>
 
                 <div className="flex flex-col items-center justify-center p-2 pt-6 md:pt-2">
@@ -51,7 +54,7 @@ export function StatsBar() {
                         <NumberTicker value={125} />
                         <span className="text-secondary ml-1">+</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">Lessons</p>
+                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">{t("lessons")}</p>
                 </div>
 
                 <div className="flex flex-col items-center justify-center p-2 pt-6 md:pt-2">
@@ -59,7 +62,7 @@ export function StatsBar() {
                         <span className="mr-1">₹</span>
                         <NumberTicker value={0} />
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">Cost Forever</p>
+                    <p className="text-sm text-muted-foreground mt-2 uppercase tracking-widest">{t("costForever")}</p>
                 </div>
             </div>
         </div>

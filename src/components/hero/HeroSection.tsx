@@ -16,8 +16,10 @@ const HeroRightSide = dynamic(() => import("@/components/hero/HeroRightSide").th
 });
 import { Play } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export function HeroSection() {
+    const t = useTranslations("Hero");
     const containerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
@@ -48,17 +50,17 @@ export function HeroSection() {
             <div className="container mx-auto px-4 md:px-8 pt-32 pb-16 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Left Side: Content */}
                 <div ref={containerRef} className="flex flex-col gap-8 items-start">
-                    <AnimatedBadge text="🎙️ AI-Powered English Learning" />
+                    <AnimatedBadge text={t("badge")} />
 
-                    <AnimatedHeading text="Speak Your Way Into Your Dream Job." />
+                    <AnimatedHeading text={t("heading")} />
 
                     <div className="hero-buttons flex flex-wrap items-center gap-4 mt-4">
                         <GradientButton className="text-lg px-8 py-6">
-                            Start Free →
+                            {t("startFree")}
                         </GradientButton>
                         <GhostButton className="text-lg px-8 py-6 gap-2">
                             <Play className="h-5 w-5 fill-current" />
-                            Watch Demo
+                            {t("watchDemo")}
                         </GhostButton>
                     </div>
 
@@ -75,7 +77,7 @@ export function HeroSection() {
                             <div className="flex text-warning text-sm">
                                 {"★★★★★"}
                             </div>
-                            <span className="text-sm text-white/80 font-medium">Join 500K+ learners</span>
+                            <span className="text-sm text-white/80 font-medium">{t("socialProof")}</span>
                         </div>
                     </div>
                 </div>

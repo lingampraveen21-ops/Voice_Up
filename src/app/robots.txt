@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /onboarding/
+Disallow: /practice/
+Disallow: /test/
+
+Sitemap: https://voiceup.ai/sitemap.xml
