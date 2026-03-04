@@ -15,7 +15,7 @@ export async function GET() {
         const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
         // 1. Try to fetch today's challenge
-        const { data: existing, error } = await supabaseAdmin
+        const { data: existing, error: _error } = await supabaseAdmin
             .from('daily_challenges')
             .select('prompt')
             .eq('date', today)

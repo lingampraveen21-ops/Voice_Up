@@ -1,11 +1,10 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Brain, CheckCircle2, XCircle, Timer } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { GradientButton } from '@/components/ui/GradientButton'
-import { toast } from 'sonner'
 import confetti from 'canvas-confetti'
 
 // Hardcoded pool of grammar questions for the Blitz
@@ -45,21 +44,13 @@ export default function GrammarBlitzPage() {
         setQuestions(shuffled)
     }, [])
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout
-        if (hasStarted && !isFinished && !isChecking && timeLeft > 0) {
-            timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000)
-        } else if (timeLeft === 0 && hasStarted && !isFinished && !isChecking) {
-            handleTimeout()
+    const finishGame = useCallback(() => {
+        setIsFinished(true)
+        if (score > 200) {
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } })
         }
-        return () => clearInterval(timer)
-    }, [hasStarted, isFinished, isChecking, timeLeft])
-
-    const handleTimeout = () => {
-        setIsChecking(true)
-        setSelectedOption(-1) // marks wrong
-        setTimeout(() => advanceQuestion(false), 1500)
-    }
+        // In a real app we would save the score to Supabase here
+    }, [score])
 
     const handleAnswer = (index: number) => {
         if (isChecking) return
@@ -75,7 +66,7 @@ export default function GrammarBlitzPage() {
         setTimeout(() => advanceQuestion(isCorrect), 1500)
     }
 
-    const advanceQuestion = (wasCorrect: boolean) => {
+    const advanceQuestion = useCallback((_wasCorrect: boolean) => {
         if (currentIndex < questions.length - 1) {
             setCurrentIndex(prev => prev + 1)
             setTimeLeft(30)
@@ -84,15 +75,23 @@ export default function GrammarBlitzPage() {
         } else {
             finishGame()
         }
-    }
+    }, [currentIndex, questions.length, finishGame])
 
-    const finishGame = () => {
-        setIsFinished(true)
-        if (score > 200) {
-            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } })
+    const handleTimeout = useCallback(() => {
+        setIsChecking(true)
+        setSelectedOption(-1) // marks wrong
+        setTimeout(() => advanceQuestion(false), 1500)
+    }, [advanceQuestion])
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout
+        if (hasStarted && !isFinished && !isChecking && timeLeft > 0) {
+            timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000)
+        } else if (timeLeft === 0 && hasStarted && !isFinished && !isChecking) {
+            handleTimeout()
         }
-        // In a real app we would save the score to Supabase here
-    }
+        return () => clearInterval(timer)
+    }, [hasStarted, isFinished, isChecking, timeLeft, handleTimeout])
 
     return (
         <div className="min-h-screen bg-[#080810] text-white flex flex-col p-4 md:p-8">

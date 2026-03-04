@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from '@/navigation';
 
 export default function PrivacyPage() {
-    const t = useTranslations('Legal');
+    const _t = useTranslations('Legal');
 
     return (
         <div className="min-h-screen bg-[#080810] text-white py-20 px-4">

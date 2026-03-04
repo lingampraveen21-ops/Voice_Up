@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from '@/navigation';
 

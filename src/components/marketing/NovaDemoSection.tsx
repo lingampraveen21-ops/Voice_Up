@@ -2,7 +2,7 @@
 
 import { NovaAvatar } from "@/components/ui/NovaAvatar";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { useTranslations } from "next-intl";
 
@@ -10,14 +10,14 @@ export function NovaDemoSection() {
     const t = useTranslations("NovaDemo");
     const [stepIndex, setStepIndex] = useState(0);
 
-    const DEMO_SEQUENCE = [
+    const DEMO_SEQUENCE = useMemo(() => [
         { type: "user", text: t("userMsg1"), delay: 1000 },
         { type: "nova", text: t("novaMsg1"), delay: 2500 },
         { type: "clear", delay: 5000 },
         { type: "user", text: t("userMsg2"), delay: 1000 },
         { type: "nova", text: t("novaMsg2"), delay: 2500 },
         { type: "clear", delay: 5000 },
-    ];
+    ], [t]);
 
     useEffect(() => {
         const currentStep = DEMO_SEQUENCE[stepIndex];

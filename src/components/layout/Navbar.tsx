@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useLenis } from "lenis/react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, usePathname } from "@/navigation";
+import { Link } from "@/navigation";
 import { useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "../shared/ThemeToggle";

@@ -32,10 +32,7 @@ export default function SpeakingPracticePage() {
         transcript,
         isThinking,
         isSpeaking,
-        setListening,
-        setTranscript,
         setThinking,
-        setSpeaking,
         addMessageToHistory,
         conversationHistory,
         resetSession
@@ -47,7 +44,7 @@ export default function SpeakingPracticePage() {
     const [profile, setProfile] = useState<SpeakingProfileData | null>(null)
     const [novaMessage, setNovaMessage] = useState("")
     const [correction, setCorrection] = useState<{ original: string, corrected: string, explanation: string } | null>(null)
-    const [mistakes, setMistakes] = useState<string[]>([])
+    const [_mistakes, setMistakes] = useState<string[]>([])
     const [topic] = useState("Career Development")
     const [exchangeCount, setExchangeCount] = useState(0)
     const [sessionScore, setSessionScore] = useState(100)
@@ -133,7 +130,7 @@ export default function SpeakingPracticePage() {
         }
 
         processTranscript()
-    }, [isListening]) // eslint-disable-line
+    }, [isListening, transcript, isThinking, isSpeaking, conversationHistory, topic, profile, addMessageToHistory, speak, t])
 
     // 3. Silence Detection Logic
     useEffect(() => {

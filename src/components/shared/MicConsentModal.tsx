@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Mic, ShieldCheck, X } from "lucide-react";
 import { GradientButton } from "../ui/GradientButton";
 import { GhostButton } from "../ui/GhostButton";
-import { useTranslations } from "next-intl";
 
 interface MicConsentModalProps {
     onAllow: () => void;
@@ -13,7 +11,6 @@ interface MicConsentModalProps {
 }
 
 export function MicConsentModal({ onAllow, onCancel }: MicConsentModalProps) {
-    const t = useTranslations("Practice.speaking");
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

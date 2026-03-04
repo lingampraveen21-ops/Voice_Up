@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Mic, Square, Loader2, Sparkles, Trophy, CalendarDays, Award, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Mic, Square, Loader2, Sparkles, Trophy, CalendarDays, CheckCircle2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder'
 import { GradientButton } from '@/components/ui/GradientButton'
@@ -31,7 +31,7 @@ export default function DailyChallengePage() {
     const [result, setResult] = useState<GradeResult | null>(null)
     const [alreadyCompleted, setAlreadyCompleted] = useState(false)
 
-    const { isRecording, transcript, startRecording, stopRecording } = useVoiceRecorder()
+    const { transcript, startRecording, stopRecording } = useVoiceRecorder()
 
     useEffect(() => {
         const fetchDaily = async () => {
@@ -57,7 +57,7 @@ export default function DailyChallengePage() {
                 const res = await fetch('/api/challenge')
                 const data = await res.json()
                 setPrompt(data.prompt)
-            } catch (error) {
+            } catch (_error) {
                 toast.error("Failed to load daily challenge")
             } finally {
                 setIsLoadingPrompt(false)
@@ -66,22 +66,12 @@ export default function DailyChallengePage() {
         fetchDaily()
     }, [supabase])
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout
-        if (hasStarted && !isFinished && timeLeft > 0) {
-            timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000)
-        } else if (timeLeft === 0 && hasStarted && !isFinished) {
-            handleStop()
-        }
-        return () => clearInterval(timer)
-    }, [hasStarted, timeLeft, isFinished])
-
     const handleStart = () => {
         setHasStarted(true)
         startRecording()
     }
 
-    const handleStop = async () => {
+    const handleStop = useCallback(async () => {
         stopRecording()
         setIsFinished(true)
         setIsGrading(true)
@@ -124,7 +114,17 @@ export default function DailyChallengePage() {
         } finally {
             setIsGrading(false)
         }
-    }
+    }, [stopRecording, transcript, prompt, supabase, timeLeft])
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout
+        if (hasStarted && !isFinished && timeLeft > 0) {
+            timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000)
+        } else if (timeLeft === 0 && hasStarted && !isFinished) {
+            handleStop()
+        }
+        return () => clearInterval(timer)
+    }, [hasStarted, timeLeft, isFinished, handleStop])
 
     if (isLoadingPrompt) return (
         <div className="min-h-screen bg-[#080810] flex items-center justify-center">
@@ -135,7 +135,7 @@ export default function DailyChallengePage() {
     if (alreadyCompleted) return (
         <div className="min-h-screen bg-[#080810] text-white flex flex-col items-center justify-center p-4">
             <CheckCircle2 className="w-24 h-24 text-emerald-500 mb-6" />
-            <h1 className="text-4xl font-bold mb-4">You've crushed it today!</h1>
+            <h1 className="text-4xl font-bold mb-4">You&apos;ve crushed it today!</h1>
             <p className="text-zinc-400 max-w-md text-center mb-8">You have already completed the Daily Challenge. Come back tomorrow for a fresh prompt, or try the Timed Challenges.</p>
             <GradientButton onClick={() => router.push('/challenges')} className="px-8 py-3">
                 Return to Arena
@@ -185,7 +185,7 @@ export default function DailyChallengePage() {
                             </div>
 
                             <h2 className="text-2xl md:text-4xl font-bold mb-12 min-h-[100px] flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 to-white text-balance leading-relaxed">
-                                "{prompt}"
+                                &quot;{prompt}&quot;
                             </h2>
 
                             <div className="w-full h-40 bg-white/5 rounded-2xl p-6 mb-8 overflow-y-auto border border-white/10 relative text-left">

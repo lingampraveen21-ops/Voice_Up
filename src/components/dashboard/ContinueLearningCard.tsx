@@ -28,7 +28,7 @@ export const ContinueLearningCard: FC = () => {
                     <Rocket className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Ready to start your journey?</h3>
-                <p className="text-zinc-400 text-sm mb-6 max-w-md">You haven't started any lessons yet. NOVA recommends beginning with "Mastering Introductions".</p>
+                <p className="text-zinc-400 text-sm mb-6 max-w-md">You haven&apos;t started any lessons yet. NOVA recommends beginning with &quot;Mastering Introductions&quot;.</p>
                 <GradientButton onClick={() => router.push('/learn')} className="px-8 py-4">
                     Start Your First Lesson →
                 </GradientButton>
