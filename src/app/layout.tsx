@@ -1,4 +1,5 @@
 import QueryProvider from "@/components/providers/QueryProvider";
+import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
@@ -34,10 +35,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans">
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <SmoothScrollProvider>
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

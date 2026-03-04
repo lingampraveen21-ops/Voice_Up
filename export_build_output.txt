@@ -1,0 +1,178 @@
+﻿
+> vup@0.1.0 build
+> next build
+
+  Ôû▓ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ Ô£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/19) ...
+   Generating static pages (4/19) 
+   Generating static pages (9/19) 
+   Generating static pages (14/19) 
+node.exe : TypeError: 
+Cannot read 
+properties of 
+undefined (reading 
+'S')
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (TypeError:   
+  Cann...d (readin    
+g 'S'):String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+    at 
+f3.exports.f5.exports 
+(C:\Users\prave\OneDri
+ve\Desktop\Voice_Up\.n
+ext\server\app\(market
+ing)\page.js:389:97864
+)
+    at C:\Users\prave\
+OneDrive\Desktop\Voice
+_Up\.next\server\app\(
+marketing)\page.js:393
+:3913
+    at 4476 (C:\Users\
+prave\OneDrive\Desktop
+\Voice_Up\.next\server
+\app\(marketing)\page.
+js:393:3951)
+    at Object.t [as 
+require] (C:\Users\pra
+ve\OneDrive\Desktop\Vo
+ice_Up\.next\server\we
+bpack-runtime.js:1:127
+)
+    at require (C:\Use
+rs\prave\OneDrive\Desk
+top\Voice_Up\node_modu
+les\next\dist\compiled
+\next-server\app-page.
+runtime.prod.js:17:188
+11)
+    at A (C:\Users\pra
+ve\OneDrive\Desktop\Vo
+ice_Up\node_modules\ne
+xt\dist\compiled\next-
+server\app-page.runtim
+e.prod.js:12:94398)
+    at R (C:\Users\pra
+ve\OneDrive\Desktop\Vo
+ice_Up\node_modules\ne
+xt\dist\compiled\next-
+server\app-page.runtim
+e.prod.js:12:92949)
+    at rR (C:\Users\pr
+ave\OneDrive\Desktop\V
+oice_Up\node_modules\n
+ext\dist\compiled\next
+-server\app-page.runti
+me.prod.js:12:33975)
+    at nL (C:\Users\pr
+ave\OneDrive\Desktop\V
+oice_Up\node_modules\n
+ext\dist\compiled\next
+-server\app-page.runti
+me.prod.js:12:62305)
+    at nB (C:\Users\pr
+ave\OneDrive\Desktop\V
+oice_Up\node_modules\n
+ext\dist\compiled\next
+-server\app-page.runti
+me.prod.js:12:67539) {
+  digest: '1099393848'
+}
+
+Error occurred 
+prerendering page 
+"/". Read more: https:
+//nextjs.org/docs/mess
+ages/prerender-error
+
+TypeError: Cannot 
+read properties of 
+undefined (reading 
+'S')
+    at 
+f3.exports.f5.exports 
+(C:\Users\prave\OneDri
+ve\Desktop\Voice_Up\.n
+ext\server\app\(market
+ing)\page.js:389:97864
+)
+    at C:\Users\prave\
+OneDrive\Desktop\Voice
+_Up\.next\server\app\(
+marketing)\page.js:393
+:3913
+    at 4476 (C:\Users\
+prave\OneDrive\Desktop
+\Voice_Up\.next\server
+\app\(marketing)\page.
+js:393:3951)
+    at Object.t [as 
+require] (C:\Users\pra
+ve\OneDrive\Desktop\Vo
+ice_Up\.next\server\we
+bpack-runtime.js:1:127
+)
+    at require (C:\Use
+rs\prave\OneDrive\Desk
+top\Voice_Up\node_modu
+les\next\dist\compiled
+\next-server\app-page.
+runtime.prod.js:17:188
+11)
+    at A (C:\Users\pra
+ve\OneDrive\Desktop\Vo
+ice_Up\node_modules\ne
+xt\dist\compiled\next-
+server\app-page.runtim
+e.prod.js:12:94398)
+    at R (C:\Users\pra
+ve\OneDrive\Desktop\Vo
+ice_Up\node_modules\ne
+xt\dist\compiled\next-
+server\app-page.runtim
+e.prod.js:12:92949)
+    at rR (C:\Users\pr
+ave\OneDrive\Desktop\V
+oice_Up\node_modules\n
+ext\dist\compiled\next
+-server\app-page.runti
+me.prod.js:12:33975)
+    at nL (C:\Users\pr
+ave\OneDrive\Desktop\V
+oice_Up\node_modules\n
+ext\dist\compiled\next
+-server\app-page.runti
+me.prod.js:12:62305)
+    at nB (C:\Users\pr
+ave\OneDrive\Desktop\V
+oice_Up\node_modules\n
+ext\dist\compiled\next
+-server\app-page.runti
+me.prod.js:12:67539)
+ Ô£ô Generating static pages (19/19)
+
+> Export encountered 
+errors on following 
+paths:
+	/(marketing)/page: /
