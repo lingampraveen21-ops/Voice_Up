@@ -31,7 +31,8 @@ export default function ReadingPage() {
     const router = useRouter()
     const supabase = createClient()
     const { isSupported, startListening, stopListening } = useVoiceRecorder()
-    const { isListening } = { isListening: false }
+    // isListening state is managed internally by useNovaStore via useVoiceRecorder
+    const isListening = false // reading page uses mic but doesn't track live state here
     const [popup, setPopup] = useState<PopupState | null>(null)
     const [scrollProgress, setScrollProgress] = useState(0)
     const [blankAnswers, setBlankAnswers] = useState<Record<number, string>>({})
