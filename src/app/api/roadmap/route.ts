@@ -12,72 +12,73 @@ export async function POST(req: Request) {
         }
 
         const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) return NextResponse.json({ error: 'API key missing' }, { status: 500 })
+        if (!apiKey) {
+            return NextResponse.json({ error: 'Gemini API Key is missing. Check .env.local' }, { status: 500 })
+        }
 
         const ai = new GoogleGenAI({ apiKey })
 
         const systemInstruction = `
-        You are NOVA, an expert English learning planner.
-        The user has described their goal in their own words: "${userGoal}"
-        Their current CEFR level is: ${level || 'unknown'}.
+You are NOVA, an expert English learning planner.
+The user's goal: "${userGoal}"
+Their current CEFR level: ${level || 'unknown'}.
 
-        Understand the user's intent from their natural language description.
-        Extract: their specific goal, timeline (in days), and any daily time commitment they mentioned.
-        Then generate a realistic day-by-day learning roadmap with exactly 7 major milestones.
+Understand the user's intent from their natural language description.
+Extract: their specific goal, timeline, and daily commitment.
+Then generate a realistic day-by-day learning roadmap with exactly 7 major milestones/steps.
 
-        For each milestone provide:
-        - dayLabel: e.g. "Day 1", "Day 5", "Week 2", "Final Day"
-        - title: a short action-oriented title
-        - description: 1-2 sentences of what to practice and how
-        - skill: one of: speaking, listening, reading, writing, grammar, vocabulary
-        - status: the first milestone is "current", all others are "locked"
+Return valid JSON matching the schema.
+`
 
-        Also write one line of motivational advice tailored to their specific goal.
-        Return valid JSON matching the schema.
-        `
-
+        // Reverting to the simpler Array schema which is proven to work in grade-writing/route.ts
         const responseSchema: Schema = {
             type: Type.OBJECT,
             properties: {
                 roadmap: {
                     type: Type.ARRAY,
-                    description: 'Array of exactly 7 milestone steps',
+                    description: 'The 7 milestone steps',
                     items: {
                         type: Type.OBJECT,
                         properties: {
-                            dayLabel: { type: Type.STRING, description: 'E.g. Day 1, Day 5, Week 2, Final Day' },
+                            dayLabel: { type: Type.STRING },
                             title: { type: Type.STRING },
                             description: { type: Type.STRING },
-                            skill: { type: Type.STRING, description: 'One of: speaking, listening, reading, writing, grammar, vocabulary' },
-                            status: { type: Type.STRING, description: 'Either: current, locked' }
+                            skill: { type: Type.STRING },
+                            status: { type: Type.STRING }
                         },
                         required: ['dayLabel', 'title', 'description', 'skill', 'status']
                     }
                 },
-                advice: { type: Type.STRING, description: 'One sentence of personalized motivational advice' }
+                advice: { type: Type.STRING, description: 'One sentence of motivational advice' }
             },
             required: ['roadmap', 'advice']
         }
 
+        // Using gemini-1.5-flash for maximum stability with structured output
         const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash',
+            model: 'gemini-1.5-flash',
             contents: [{ role: 'user', parts: [{ text: userGoal }] }],
             config: {
                 systemInstruction,
                 responseMimeType: 'application/json',
                 responseSchema,
-                temperature: 0.7
+                temperature: 0.7,
             }
         })
 
-        const parsed = JSON.parse(response.text ?? '{}')
+        const responseText = response.text ?? '{}'
+        if (!responseText || responseText === '{}') {
+            throw new Error('Model returned empty response.')
+        }
+
+        const parsed = JSON.parse(responseText)
         return NextResponse.json(parsed)
 
     } catch (error) {
-        console.error('Roadmap generation error:', error)
+        console.error('Roadmap API Error:', error)
         return NextResponse.json({
-            error: 'Generation failed',
-            details: error instanceof Error ? error.message : 'Unknown'
+            error: 'Gemini API failed',
+            details: error instanceof Error ? error.message : 'Unknown server error'
         }, { status: 500 })
     }
 }
