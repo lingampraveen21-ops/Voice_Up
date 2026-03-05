@@ -86,14 +86,14 @@ export default function ProfileTab() {
             }
 
             if (error) throw error
-            return { id: user.id }
+            return { id: user.id, full_name: null, avatar_url: null, cefr_level: null, daily_goal_minutes: 10, interview_date: null }
         }
     })
 
     useEffect(() => {
         if (profile) {
             reset({
-                full_name: profile.full_name || "",
+                full_name: "full_name" in profile ? profile.full_name || "" : "",
                 daily_goal_minutes: profile.daily_goal_minutes || 10,
                 interview_date: profile.interview_date || null
             })
