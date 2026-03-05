@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Target, TrendingUp, Zap, Clock, ShieldCheck, History, BookOpen, Flame, Mic, Headphones, PenLine, BookMarked } from 'lucide-react'
+import { ArrowLeft, Target, TrendingUp, Zap, Clock, ShieldCheck, History, BookOpen, Flame, Mic, Headphones, PenLine, BookMarked, Trophy, Timer } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { RiveNovaAvatar } from '@/components/ui/RiveNovaAvatar'
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { BADGES, getLevelFromXP, LEVEL_THRESHOLDS } from '@/lib/gamification'
 
@@ -135,55 +136,82 @@ export default function ProgressPage() {
     const [earnedBadges, setEarnedBadges] = useState<string[]>([])
     const [recentSessions, setRecentSessions] = useState<SessionData[]>([])
     const [xpHistory, setXpHistory] = useState<{ name: string, xp: number }[]>([])
+    const [hasError, setHasError] = useState(false)
 
     useEffect(() => {
         const load = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return router.push('/login')
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return router.push('/login')
 
-            const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-            if (p) {
-                setProfile(p)
-                let badgesArr: string[] = []
-                try { badgesArr = JSON.parse(p.earned_badges || '[]') } catch { }
-                setEarnedBadges(badgesArr)
+                const { data: p, error: pError } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+
+                if (pError || !p) {
+                    console.error("Profile load error:", pError)
+                    setHasError(true)
+                    // Set a default empty profile
+                    setProfile({
+                        id: user.id,
+                        xp: 0,
+                        streak: 0,
+                        earned_badges: '[]',
+                        scores: '{}'
+                    } as UserProfile)
+                    setStats([
+                        { subject: 'Speaking', A: 0, fullMark: 100 },
+                        { subject: 'Grammar', A: 0, fullMark: 100 },
+                        { subject: 'Listening', A: 0, fullMark: 100 },
+                        { subject: 'Vocabulary', A: 0, fullMark: 100 },
+                        { subject: 'Writing', A: 0, fullMark: 100 },
+                    ])
+                } else {
+                    setProfile(p)
+                    let badgesArr: string[] = []
+                    try { badgesArr = JSON.parse(p.earned_badges || '[]') } catch { }
+                    setEarnedBadges(badgesArr)
+
+                    // Parse scores
+                    let parsedScores: Record<string, number> = {}
+                    try { parsedScores = JSON.parse(p.scores || '{}') } catch { }
+                    setScores(parsedScores)
+
+                    const skillData: SkillData[] = [
+                        { subject: 'Speaking', A: parsedScores.speaking || 0, fullMark: 100 },
+                        { subject: 'Grammar', A: parsedScores.grammar || 0, fullMark: 100 },
+                        { subject: 'Listening', A: parsedScores.listening || 0, fullMark: 100 },
+                        { subject: 'Vocabulary', A: parsedScores.vocabulary || 0, fullMark: 100 },
+                        { subject: 'Writing', A: parsedScores.writing || 0, fullMark: 100 },
+                    ]
+                    setStats(skillData)
+                }
+
+                // Fetch recent 5 sessions
+                const { data: sessions, error: sError } = await supabase
+                    .from('sessions')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5)
+
+                if (sError) {
+                    console.error("Sessions load error:", sError)
+                    setHasError(true)
+                } else if (sessions) {
+                    setRecentSessions(sessions)
+                    // Build XP history from real sessions
+                    const grouped: Record<string, number> = {}
+                    sessions.slice().reverse().forEach((s: any) => {
+                        const day = new Date(s.created_at).toLocaleDateString('en-US', { weekday: 'short' })
+                        grouped[day] = (grouped[day] || 0) + (s.score || 0)
+                    })
+                    setXpHistory(Object.entries(grouped).map(([name, xp]) => ({ name, xp })))
+                }
+            } catch (err) {
+                console.error("Unexpected load error:", err)
+                setHasError(true)
+            } finally {
+                setIsLoading(false)
             }
-
-            // Parse scores — use 0 as default, NOT fake fallback numbers
-            let parsedScores: Record<string, number> = {}
-            try { parsedScores = JSON.parse(p?.scores || '{}') } catch { }
-            setScores(parsedScores)
-
-            const skillData: SkillData[] = [
-                { subject: 'Speaking', A: parsedScores.speaking || 0, fullMark: 100 },
-                { subject: 'Grammar', A: parsedScores.grammar || 0, fullMark: 100 },
-                { subject: 'Listening', A: parsedScores.listening || 0, fullMark: 100 },
-                { subject: 'Vocabulary', A: parsedScores.vocabulary || 0, fullMark: 100 },
-                { subject: 'Writing', A: parsedScores.writing || 0, fullMark: 100 },
-            ]
-            setStats(skillData)
-
-            // Fetch recent 5 sessions
-            const { data: sessions } = await supabase
-                .from('sessions')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-                .limit(5)
-
-            if (sessions) setRecentSessions(sessions)
-
-            // Build XP history from real sessions, or empty
-            if (sessions && sessions.length > 0) {
-                const grouped: Record<string, number> = {}
-                sessions.slice().reverse().forEach((s: SessionData) => {
-                    const day = new Date(s.created_at).toLocaleDateString('en-US', { weekday: 'short' })
-                    grouped[day] = (grouped[day] || 0) + (s.score || 0)
-                })
-                setXpHistory(Object.entries(grouped).map(([name, xp]) => ({ name, xp })))
-            }
-
-            setIsLoading(false)
         }
         load()
     }, [router, supabase])
@@ -217,6 +245,15 @@ export default function ProgressPage() {
     return (
         <div className="min-h-screen bg-[#080810] text-white">
             <div className="max-w-6xl mx-auto px-4 py-12">
+                {hasError && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center gap-3 text-amber-500 font-bold"
+                    >
+                        <span>⚠️ Could not load your data. Showing default view.</span>
+                    </motion.div>
+                )}
 
                 {/* Back button */}
                 <button
@@ -237,8 +274,8 @@ export default function ProgressPage() {
 
                     {/* Rank card */}
                     <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 flex items-center gap-6 w-full md:w-auto">
-                        <div className="w-16 h-16 bg-gradient-to-br from-[#6c63ff] to-indigo-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(108,99,255,0.3)]">
-                            <ShieldCheck className="w-8 h-8 text-white" />
+                        <div className="w-16 h-16 shrink-0">
+                            <RiveNovaAvatar currentState="idle" className="w-full h-full" />
                         </div>
                         <div>
                             <p className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-1">Rank</p>
@@ -346,7 +383,7 @@ export default function ProgressPage() {
                                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                                     <Target className="w-5 h-5 text-[#6c63ff]" /> Skill Mastery
                                 </h3>
-                                <div className="h-64 sm:h-72 w-full relative">
+                                <div className="h-64 sm:h-72 w-full relative" style={{ width: '100%', height: '300px', minHeight: '300px' }}>
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-10 pointer-events-none">
                                         <p className={`text-3xl font-black drop-shadow-md ${readiness === 0 ? 'text-zinc-600' : 'text-[#6c63ff]'}`}>{readiness}%</p>
                                         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Ready</p>
@@ -378,7 +415,7 @@ export default function ProgressPage() {
                                         <p className="text-xs text-zinc-700">Complete sessions to see your XP growth here</p>
                                     </div>
                                 ) : (
-                                    <div className="h-64 w-full">
+                                    <div className="h-64 w-full" style={{ width: '100%', height: '300px', minHeight: '300px' }}>
                                         <ResponsiveContainer width="100%" height="100%">
                                             <LineChart data={xpHistory}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -427,6 +464,34 @@ export default function ProgressPage() {
                                 <button className="w-full py-4 mt-6 bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-zinc-400 rounded-xl transition-colors">
                                     View Full History
                                 </button>
+                            </div>
+                        </div>
+
+                        {/* Speaking Leaderboard (Robust) */}
+                        <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 lg:p-8 mb-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <Trophy className="w-5 h-5 text-amber-500" /> Weekly Speaking Leaders
+                                </h3>
+                                <div className="text-xs font-bold text-zinc-500 bg-white/5 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
+                                    <Timer className="w-3 h-3" /> Ends in 02:45:10
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                <div className="space-y-4">
+                                    <div className="flex flex-col items-center justify-center p-8 border border-dashed border-white/10 rounded-2xl text-center bg-black/20">
+                                        <p className="text-zinc-500 font-bold mb-1">Leaderboard coming soon</p>
+                                        <p className="text-xs text-zinc-600">Join the ranking by completing more speaking sessions!</p>
+                                    </div>
+                                </div>
+                                <div className="hidden md:flex flex-col items-center justify-center text-center p-6 bg-primary/5 border border-primary/20 rounded-2xl">
+                                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+                                        <Mic className="w-8 h-8 text-primary" />
+                                    </div>
+                                    <h4 className="font-bold text-white mb-2">Speak your way to the top!</h4>
+                                    <p className="text-sm text-zinc-400">Practice speaking daily to earn points and climb the global voice leaderboard.</p>
+                                </div>
                             </div>
                         </div>
 

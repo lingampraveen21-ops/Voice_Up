@@ -59,8 +59,9 @@ export const RiveNovaAvatar = ({ currentState = 'idle', className = "w-32 h-32" 
             <RiveComponent className="w-full h-full z-10" />
 
             {/* Fallback skeleton if the Rive file hasn't loaded or is missing */}
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary/5 border border-primary/20 -z-10">
-                <Sparkles className="w-6 h-6 text-primary/30 animate-pulse" />
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-indigo-500/20 border-2 border-primary/30 shadow-[0_0_20px_rgba(168,85,247,0.2)] -z-10 animate-pulse">
+                <div className="w-1/2 h-1/2 rounded-full bg-primary/40 blur-md" />
+                <Sparkles className="absolute w-6 h-6 text-white/50 animate-bounce" />
             </div>
 
             {/* Colored glows based on state */}
