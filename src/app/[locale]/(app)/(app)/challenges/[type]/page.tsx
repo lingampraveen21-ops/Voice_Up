@@ -87,7 +87,7 @@ export default function TimedChallengePage({ params }: { params: { type: string 
             if (user) {
                 await supabase.from('sessions').insert({
                     user_id: user.id,
-                    type: `challenge_${params.type}`,
+                    activity_type: `challenge_${params.type}`,
                     score: data.overall,
                     duration: config.time - timeLeft,
                     transcript: transcript

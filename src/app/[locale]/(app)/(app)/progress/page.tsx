@@ -16,7 +16,7 @@ interface SkillData {
 
 interface SessionData {
     id: string
-    type: string
+    activity_type: string
     created_at: string
     duration: number
     score: number
@@ -412,7 +412,7 @@ export default function ProgressPage() {
                                                         <Clock className="w-5 h-5" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold capitalize text-zinc-200">{session.type.replace('_', ' ')}</p>
+                                                        <p className="font-bold capitalize text-zinc-200">{session.activity_type.replace('_', ' ')}</p>
                                                         <p className="text-xs text-zinc-500">{new Date(session.created_at).toLocaleDateString()} • {session.duration} mins</p>
                                                     </div>
                                                 </div>

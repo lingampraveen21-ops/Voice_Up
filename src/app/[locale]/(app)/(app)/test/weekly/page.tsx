@@ -50,7 +50,7 @@ export default function WeeklyTestPage() {
             if (user) {
                 await supabase.from('sessions').insert({
                     user_id: user.id,
-                    type: 'test_weekly',
+                    activity_type: 'test_weekly',
                     score: pct,
                     mistakes_count: WEEKLY_TEST.length - correct,
                     duration_seconds: 10

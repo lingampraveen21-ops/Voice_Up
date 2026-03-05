@@ -106,7 +106,7 @@ export default function ReadingPage() {
                 if (user) {
                     const { data, error } = await supabase.from('sessions').insert({
                         user_id: user.id,
-                        skill: 'reading',
+                        activity_type: 'reading',
                         score,
                         duration_seconds: ARTICLE.readTime * 60,
                         xp_earned: 25

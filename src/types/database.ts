@@ -111,6 +111,7 @@ export interface Database {
                     skill: string | null
                     lesson_id: string | null
                     type: string | null
+                    activity_type: string | null
                     mistakes_count: number | null
                     duration_seconds: number | null
                     score: number | null

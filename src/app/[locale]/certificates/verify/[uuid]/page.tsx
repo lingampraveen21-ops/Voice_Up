@@ -28,7 +28,7 @@ export default function CertificateVerificationPage({ params }: { params: { uuid
                 .from('sessions')
                 .select('*, profiles(full_name, cefr_level)')
                 .eq('id', params.uuid)
-                .eq('type', 'test_levelup')
+                .eq('activity_type', 'test_levelup')
                 .gte('score', 85)
                 .single()
 

@@ -94,7 +94,7 @@ export default function ListeningPage() {
             if (user) {
                 const { data, error } = await supabase.from('sessions').insert({
                     user_id: user.id,
-                    skill: 'listening',
+                    activity_type: 'listening',
                     score,
                     duration_seconds: 15,
                     xp_earned: 25

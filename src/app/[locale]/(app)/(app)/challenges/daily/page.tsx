@@ -44,7 +44,7 @@ export default function DailyChallengePage() {
                         .from('sessions')
                         .select('score')
                         .eq('user_id', user.id)
-                        .eq('type', 'daily_challenge')
+                        .eq('activity_type', 'daily_challenge')
                         .gte('created_at', today)
                         .limit(1)
 
@@ -92,7 +92,7 @@ export default function DailyChallengePage() {
                 // Save session
                 await supabase.from('sessions').insert({
                     user_id: user.id,
-                    type: 'daily_challenge',
+                    activity_type: 'daily_challenge',
                     score: data.overall,
                     duration: 120 - timeLeft,
                     transcript: transcript

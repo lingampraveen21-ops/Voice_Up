@@ -51,7 +51,7 @@ export default function CheckpointTestPage() {
             if (user) {
                 await supabase.from('sessions').insert({
                     user_id: user.id,
-                    type: 'test_checkpoint',
+                    activity_type: 'test_checkpoint',
                     score: pct,
                     mistakes_count: CHECKPOINT_TEST.length - correct,
                     duration_seconds: 15

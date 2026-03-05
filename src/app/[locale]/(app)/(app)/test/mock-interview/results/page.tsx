@@ -59,7 +59,7 @@ export default function MockInterviewResultsPage() {
                 if (user) {
                     await supabase.from('sessions').insert({
                         user_id: user.id,
-                        type: 'mock_interview',
+                        activity_type: 'mock_interview',
                         score: data.readyPercentage,
                         mistakes_count: data.topMistakes.length,
                         duration_seconds: 20

@@ -81,7 +81,7 @@ export default function WritingPage() {
                 if (user) {
                     const { data, error } = await supabase.from('sessions').insert({
                         user_id: user.id,
-                        skill: 'writing',
+                        activity_type: 'writing',
                         score: avg,
                         duration_seconds: 600,
                         xp_earned: 35

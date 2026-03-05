@@ -181,7 +181,7 @@ export default function SpeakingPracticePage() {
 
             const { data, error } = await supabase.from('sessions').insert({
                 user_id: profile.id,
-                skill: 'speaking',
+                activity_type: 'speaking',
                 duration_seconds: 300,
                 score: sessionScore,
                 xp_earned: xpEarned

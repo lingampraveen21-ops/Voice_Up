@@ -23,7 +23,7 @@ export default function LearnPage() {
                 .from('sessions')
                 .select('lesson_id')
                 .eq('user_id', user.id)
-                .eq('type', 'quiz')
+                .eq('activity_type', 'quiz')
                 .gte('score', 70)
             if (data) setCompletedLessons(new Set(data.map((s: { lesson_id: string }) => s.lesson_id)))
             setLoading(false)
@@ -128,8 +128,8 @@ export default function LearnPage() {
                                                             onClick={() => isUnlocked && router.push(`/learn/${lesson.id}`)}
                                                             disabled={!isUnlocked}
                                                             className={`w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all ${isComplete ? 'bg-emerald-500/10 border border-emerald-500/20' :
-                                                                    isCurrent ? 'bg-primary/10 border border-primary/40 shadow-[0_0_20px_rgba(168,85,247,0.15)]' :
-                                                                        'bg-white/5 border border-white/5 opacity-40'
+                                                                isCurrent ? 'bg-primary/10 border border-primary/40 shadow-[0_0_20px_rgba(168,85,247,0.15)]' :
+                                                                    'bg-white/5 border border-white/5 opacity-40'
                                                                 }`}
                                                         >
                                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isComplete ? 'bg-emerald-500/20' : isCurrent ? 'bg-primary/20' : 'bg-white/10'

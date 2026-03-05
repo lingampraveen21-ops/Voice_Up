@@ -60,7 +60,7 @@ export function LessonQuiz({ lesson, onBack }: LessonQuizProps) {
                 await supabase.from('sessions').insert({
                     user_id: user.id,
                     lesson_id: lesson.id,
-                    type: 'quiz',
+                    activity_type: 'quiz',
                     score: pct,
                     mistakes_count: lesson.quiz.length - correct,
                     duration_seconds: lesson.duration

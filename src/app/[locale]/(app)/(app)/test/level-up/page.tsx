@@ -62,7 +62,7 @@ export default function LevelUpTestPage() {
                 await supabase.from('profiles').update({ cefr_level: 'B1' }).eq('id', user.id)
                 await supabase.from('sessions').insert({
                     user_id: user.id,
-                    type: 'test_levelup',
+                    activity_type: 'test_levelup',
                     score: pct,
                     duration_seconds: 30
                 })

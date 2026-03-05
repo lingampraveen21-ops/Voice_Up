@@ -37,7 +37,7 @@ export const ContinueLearningCard: FC = () => {
                 .from('sessions')
                 .select('lesson_id')
                 .eq('user_id', user.id)
-                .eq('type', 'quiz')
+                .eq('activity_type', 'quiz')
                 .gte('score', 70)
 
             const completedIds = new Set(data?.map((s: { lesson_id: string }) => s.lesson_id) || [])
