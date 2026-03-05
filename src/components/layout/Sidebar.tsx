@@ -4,25 +4,26 @@ import { Mic, BookOpen, Trophy, Map, LayoutDashboard, BarChart2, Settings, User 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Sidebar() {
     const t = useTranslations("Sidebar");
     const pathname = usePathname();
+    const locale = useLocale();
 
     const NAV_ITEMS = [
-        { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
-        { name: t("learn"), href: "/learn", icon: BookOpen },
-        { name: t("speak"), href: "/practice/speaking", icon: Mic, isAction: true },
-        { name: t("challenges"), href: "/challenges", icon: Trophy },
-        { name: t("roadmap"), href: "/roadmap", icon: Map },
-        { name: t("progress"), href: "/progress", icon: BarChart2 },
+        { name: t("dashboard"), href: `/${locale}/dashboard`, icon: LayoutDashboard },
+        { name: t("learn"), href: `/${locale}/learn`, icon: BookOpen },
+        { name: t("speak"), href: `/${locale}/practice/speaking`, icon: Mic, isAction: true },
+        { name: t("challenges"), href: `/${locale}/challenges`, icon: Trophy },
+        { name: t("roadmap"), href: `/${locale}/roadmap`, icon: Map },
+        { name: t("progress"), href: `/${locale}/progress`, icon: BarChart2 },
     ];
 
     const SETTINGS_ITEMS = [
-        { name: t("settings"), href: "/settings", icon: Settings },
-        { name: t("profile"), href: "/profile", icon: User },
+        { name: t("settings"), href: `/${locale}/profile`, icon: Settings },
+        { name: t("profile"), href: `/${locale}/profile`, icon: User },
     ];
 
     return (
