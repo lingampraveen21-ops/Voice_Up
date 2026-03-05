@@ -12,6 +12,11 @@ export async function updateSession(request: NextRequest, response?: NextRespons
         process.env.NEXT_PUBLIC_SUPABASE_URL?.startsWith('http') ? process.env.NEXT_PUBLIC_SUPABASE_URL : 'https://placeholder.supabase.co',
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder',
         {
+            global: {
+                headers: {
+                    'Accept': 'application/json',
+                },
+            },
             cookies: {
                 get(name: string) {
                     return request.cookies.get(name)?.value
