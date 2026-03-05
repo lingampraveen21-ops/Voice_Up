@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
     try {
         const { transcript, expectedTopic } = await req.json()

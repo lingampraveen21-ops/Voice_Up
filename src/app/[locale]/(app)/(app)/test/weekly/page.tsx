@@ -12,16 +12,12 @@ import { WEEKLY_TEST } from '@/data/tests'
 export default function WeeklyTestPage() {
     const router = useRouter()
     const supabase = createClient()
-    const { isSupported, startListening, stopListening } = useVoiceRecorder()
+    const { isSupported, isRecording: isListening, transcript, startRecording: startListening, stopRecording: stopListening } = useVoiceRecorder()
 
     const [answers, setAnswers] = useState<Record<string, string>>({})
     const [submitted, setSubmitted] = useState(false)
     const [score, setScore] = useState(0)
     const [saving, setSaving] = useState(false)
-
-    // STT placeholder logic for Voice Recording
-    const transcript = ''
-    const isListening = false
 
     const handleMCQ = (qId: string, option: string) => {
         if (!submitted) setAnswers(prev => ({ ...prev, [qId]: option }))

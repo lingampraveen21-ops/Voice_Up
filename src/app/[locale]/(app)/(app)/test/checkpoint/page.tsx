@@ -12,16 +12,12 @@ import { CHECKPOINT_TEST } from '@/data/tests'
 export default function CheckpointTestPage() {
     const router = useRouter()
     const supabase = createClient()
-    const { isSupported, startListening, stopListening } = useVoiceRecorder()
+    const { isSupported, isRecording: isListening, transcript, startRecording: startListening, stopRecording: stopListening } = useVoiceRecorder()
 
     const [answers, setAnswers] = useState<Record<string, string>>({})
     const [submitted, setSubmitted] = useState(false)
     const [score, setScore] = useState(0)
     const [saving, setSaving] = useState(false)
-
-    // STT placeholder logic for Voice Recording (internally sets via useNovaStore in full implementation)
-    const transcript = ''
-    const isListening = false
 
     const handleMCQ = (qId: string, option: string) => {
         if (!submitted) setAnswers(prev => ({ ...prev, [qId]: option }))
