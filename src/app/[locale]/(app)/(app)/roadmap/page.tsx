@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Edit3, Target, CalendarDays, CheckCircle2, Lock, Loader2, Sparkles, Map } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -37,7 +37,7 @@ export default function RoadmapPage() {
     const [loading, setLoading] = useState(true)
     const [generating, setGenerating] = useState(false)
 
-    const fetchRoadmap = async (userProfile: UserProfile) => {
+    const fetchRoadmap = useCallback(async (userProfile: UserProfile) => {
         setGenerating(true)
         try {
             const res = await fetch('/api/roadmap', {
@@ -68,7 +68,7 @@ export default function RoadmapPage() {
         } finally {
             setGenerating(false)
         }
-    }
+    }, [supabase])
 
     useEffect(() => {
         const load = async () => {
@@ -93,7 +93,7 @@ export default function RoadmapPage() {
             }
         }
         load()
-    }, [router, supabase])
+    }, [router, supabase, fetchRoadmap])
 
     if (loading || generating) return (
         <div className="min-h-screen bg-[#080810] flex flex-col items-center justify-center text-white">

@@ -63,10 +63,10 @@ export default function GrammarBlitzPage() {
             setScore(prev => prev + 10 + timeLeft)
         }
 
-        setTimeout(() => advanceQuestion(isCorrect), 1500)
+        setTimeout(advanceQuestion, 1500)
     }
 
-    const advanceQuestion = useCallback((_wasCorrect: boolean) => {
+    const advanceQuestion = useCallback(() => {
         if (currentIndex < questions.length - 1) {
             setCurrentIndex(prev => prev + 1)
             setTimeLeft(30)
@@ -80,7 +80,7 @@ export default function GrammarBlitzPage() {
     const handleTimeout = useCallback(() => {
         setIsChecking(true)
         setSelectedOption(-1) // marks wrong
-        setTimeout(() => advanceQuestion(false), 1500)
+        setTimeout(advanceQuestion, 1500)
     }, [advanceQuestion])
 
     useEffect(() => {

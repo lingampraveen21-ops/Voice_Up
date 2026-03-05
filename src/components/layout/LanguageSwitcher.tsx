@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/navigation';
 import {
     DropdownMenu,
@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Languages } from "lucide-react";
-import { motion } from "framer-motion";
-
 const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
@@ -21,7 +19,6 @@ const languages = [
 ];
 
 export function LanguageSwitcher() {
-    const t = useTranslations('Common');
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();

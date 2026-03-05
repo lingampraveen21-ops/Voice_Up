@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest, response?: NextResponse) {
-    let supabaseResponse = response || NextResponse.next({
+    const supabaseResponse = response || NextResponse.next({
         request: {
             headers: request.headers,
         },
@@ -18,16 +18,10 @@ export async function updateSession(request: NextRequest, response?: NextRespons
                 },
                 set(name: string, value: string, options: CookieOptions) {
                     request.cookies.set({ name, value, ...options })
-                    supabaseResponse = NextResponse.next({
-                        request: { headers: request.headers },
-                    })
                     supabaseResponse.cookies.set({ name, value, ...options })
                 },
                 remove(name: string, options: CookieOptions) {
                     request.cookies.set({ name, value: '', ...options })
-                    supabaseResponse = NextResponse.next({
-                        request: { headers: request.headers },
-                    })
                     supabaseResponse.cookies.set({ name, value: '', ...options })
                 },
             },
@@ -51,16 +45,18 @@ export async function updateSession(request: NextRequest, response?: NextRespons
     // Guest-friendly learn paths
     const isGuestLessonPath = subPath.startsWith('/learn/lesson-1') || subPath.startsWith('/learn/lesson-2')
 
-    if (!user && !isPublicAuthPath && !isRootPaths && !isGuestLessonPath && !path.startsWith('/_next')) {
+    const isApiRoute = path.startsWith('/api')
+
+    if (!user && !isPublicAuthPath && !isRootPaths && !isGuestLessonPath && !path.startsWith('/_next') && !isApiRoute) {
         // Attempting to access protected paths without user -> redirect to login
-        const loginUrl = new URL(`/${locale || 'en'}/login`, request.url)
+        const loginUrl = new URL(`/${isLocalePath ? locale : 'en'}/login`, request.url)
         return NextResponse.redirect(loginUrl)
     }
 
     if (user) {
         if (isPublicAuthPath && !subPath.startsWith('/auth/reset-password')) {
             // Logged in users trying to access login/signup -> redirect to dashboard
-            const dashboardUrl = new URL(`/${locale || 'en'}/dashboard`, request.url)
+            const dashboardUrl = new URL(`/${isLocalePath ? locale : 'en'}/dashboard`, request.url)
             return NextResponse.redirect(dashboardUrl)
         }
 

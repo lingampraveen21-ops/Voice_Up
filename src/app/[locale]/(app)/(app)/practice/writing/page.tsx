@@ -95,7 +95,7 @@ export default function WritingPage() {
             }
         } catch { toast.error('Grading failed. Please try again.') }
         setGrading(false)
-    }, [text, wordCount, prompt.type, sessionSaved, supabase])
+    }, [text, wordCount, prompt.type, sessionSaved, supabase, openFeedback])
 
     const scoreColor = (s: number) => s >= 80 ? 'bg-emerald-500' : s >= 60 ? 'bg-amber-500' : 'bg-red-500'
 

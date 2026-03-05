@@ -44,7 +44,6 @@ export default function SpeakingPracticePage() {
     const [profile, setProfile] = useState<SpeakingProfileData | null>(null)
     const [novaMessage, setNovaMessage] = useState("")
     const [correction, setCorrection] = useState<{ original: string, corrected: string, explanation: string } | null>(null)
-    const [_mistakes, setMistakes] = useState<string[]>([])
     const [topic] = useState("Career Development")
     const [exchangeCount, setExchangeCount] = useState(0)
     const [sessionScore, setSessionScore] = useState(100)
@@ -111,7 +110,6 @@ export default function SpeakingPracticePage() {
 
                     if (data.grammarMistake && data.correction) {
                         setCorrection(data.correction)
-                        setMistakes(prev => [...prev, data.correction.corrected])
                         setSessionScore(prev => Math.max(0, prev - 5))
                     } else {
                         setCorrection(null)
@@ -130,7 +128,7 @@ export default function SpeakingPracticePage() {
         }
 
         processTranscript()
-    }, [isListening, transcript, isThinking, isSpeaking, conversationHistory, topic, profile, addMessageToHistory, speak, t])
+    }, [isListening, transcript, isThinking, isSpeaking, conversationHistory, topic, profile, addMessageToHistory, speak, t, setThinking])
 
     // 3. Silence Detection Logic
     useEffect(() => {

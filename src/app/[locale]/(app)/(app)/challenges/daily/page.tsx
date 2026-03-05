@@ -57,7 +57,7 @@ export default function DailyChallengePage() {
                 const res = await fetch('/api/challenge')
                 const data = await res.json()
                 setPrompt(data.prompt)
-            } catch (_error) {
+            } catch {
                 toast.error("Failed to load daily challenge")
             } finally {
                 setIsLoadingPrompt(false)

@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight } from 'lucide-react'
-import { format } from 'date-fns'
 import { RiveNovaAvatar } from '@/components/ui/RiveNovaAvatar'
 
 interface GreetingCardProps {
