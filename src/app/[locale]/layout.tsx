@@ -78,8 +78,8 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans">
+    <html lang={locale} suppressHydrationWarning className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <SmoothScrollProvider>
