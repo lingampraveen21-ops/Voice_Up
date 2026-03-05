@@ -50,8 +50,18 @@ export default function DashboardPage() {
         const fetchProfile = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
-                const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-                if (data) setProfile(data)
+                const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+                if (error && error.code === 'PGRST116') {
+                    // Profile doesn't exist yet, create it
+                    const { data: newProfile } = await supabase.from('profiles').upsert({
+                        id: user.id,
+                        full_name: user.user_metadata?.full_name || user.email || '',
+                        created_at: new Date().toISOString(),
+                    }).select('*').single()
+                    if (newProfile) setProfile(newProfile)
+                } else if (data) {
+                    setProfile(data)
+                }
             }
             setLoading(false)
         }

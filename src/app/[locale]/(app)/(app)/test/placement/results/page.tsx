@@ -53,7 +53,15 @@ export default function PlacementResultsPage() {
         const fetchScores = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
-                const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+                const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+                if (error && error.code === 'PGRST116') {
+                    // Profile doesn't exist yet, create it
+                    await supabase.from('profiles').upsert({
+                        id: user.id,
+                        full_name: user.user_metadata?.full_name || user.email || '',
+                        created_at: new Date().toISOString(),
+                    })
+                }
                 if (data) {
                     setScores({
                         total: data.voiceup_score || 0,

@@ -99,8 +99,15 @@ export default function DailyChallengePage() {
                 })
 
                 // Add XP (+60 for Daily Challenge)
-                const { data: profile } = await supabase.from('profiles').select('xp').eq('id', user.id).single()
-                if (profile) {
+                const { data: profile, error: profileErr } = await supabase.from('profiles').select('xp').eq('id', user.id).single()
+                if (profileErr && profileErr.code === 'PGRST116') {
+                    // Profile doesn't exist yet, create with initial XP
+                    await supabase.from('profiles').upsert({
+                        id: user.id,
+                        xp: 60,
+                        created_at: new Date().toISOString(),
+                    })
+                } else if (profile) {
                     await supabase.from('profiles').update({ xp: (profile.xp || 0) + 60 }).eq('id', user.id)
                 }
             }

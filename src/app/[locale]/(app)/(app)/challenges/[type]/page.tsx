@@ -95,8 +95,15 @@ export default function TimedChallengePage({ params }: { params: { type: string 
 
                 // Add XP (simulate via RPC or manual profile update)
                 // For safety we can update profiles natively here if RPC isn't available
-                const { data: profile } = await supabase.from('profiles').select('xp').eq('id', user.id).single()
-                if (profile) {
+                const { data: profile, error: profileErr } = await supabase.from('profiles').select('xp').eq('id', user.id).single()
+                if (profileErr && profileErr.code === 'PGRST116') {
+                    // Profile doesn't exist yet, create with initial XP
+                    await supabase.from('profiles').upsert({
+                        id: user.id,
+                        xp: config.xp,
+                        created_at: new Date().toISOString(),
+                    })
+                } else if (profile) {
                     await supabase.from('profiles').update({ xp: (profile.xp || 0) + config.xp }).eq('id', user.id)
                 }
             }

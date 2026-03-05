@@ -162,10 +162,21 @@ export default function ProgressPage() {
 
                 const { data: p, error: pError } = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
-                if (pError || !p) {
+                if (pError && pError.code === 'PGRST116') {
+                    // Profile doesn't exist yet, create it
+                    const { data: newP } = await supabase.from('profiles').upsert({
+                        id: user.id,
+                        full_name: user.user_metadata?.full_name || user.email || '',
+                        created_at: new Date().toISOString(),
+                    }).select('*').single()
+                    if (newP) {
+                        setProfile(newP)
+                    } else {
+                        setProfile(prev => ({ ...prev, id: user.id }))
+                    }
+                } else if (pError || !p) {
                     console.error("Profile load error:", pError)
                     setHasError(true)
-                    // Keep default values — don't reset to null
                     setProfile(prev => ({ ...prev, id: user.id }))
                 } else {
                     setProfile(p)

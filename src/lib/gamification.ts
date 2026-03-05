@@ -81,7 +81,15 @@ export async function trackSessionProgress(
 ) {
     try {
         // 1. Fetch current profile
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single()
+        let { data: profile, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+        if (error && error.code === 'PGRST116') {
+            // Profile doesn't exist yet, create it
+            const { data: newProfile } = await supabase.from('profiles').upsert({
+                id: userId,
+                created_at: new Date().toISOString(),
+            }).select('*').single()
+            profile = newProfile
+        }
         if (!profile) return
 
         // 2. Calculate newly earned XP
