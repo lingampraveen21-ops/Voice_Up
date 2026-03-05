@@ -13,11 +13,11 @@ export async function POST(req: Request) {
 
         const apiKey = process.env.GEMINI_API_KEY
         if (!apiKey) {
-            return NextResponse.json({ error: "Gemini API Key is missing. Check .env" }, { status: 500 })
+            return NextResponse.json({ error: "Gemini API Key is missing. Check .env.local" }, { status: 500 })
         }
 
         // Initialize the official Gemini SDK
-        const ai = new GoogleGenAI({ apiKey: apiKey })
+        const ai = new GoogleGenAI({ apiKey })
 
         // Language specific context
         const localeNames: Record<string, string> = {
@@ -44,9 +44,13 @@ export async function POST(req: Request) {
     7. Track mistakes and reference them: "Earlier you said X..."
  
     You MUST return your response as a JSON object adhering to the schema provided.
+    If there is a grammar mistake, set grammarMistake to true and populate correctionOriginal, correctionCorrected, correctionExplanation.
+    If there is no grammar mistake, set grammarMistake to false and leave correctionOriginal, correctionCorrected, correctionExplanation as empty strings.
     `
 
-        // Define the schema Gemini must return
+        // Define the schema Gemini must return.
+        // NOTE: Gemini structured output does not support nullable OBJECT types reliably.
+        // We flatten the correction object into top-level string fields instead.
         const responseSchema: Schema = {
             type: Type.OBJECT,
             properties: {
@@ -58,22 +62,24 @@ export async function POST(req: Request) {
                     type: Type.BOOLEAN,
                     description: "True if the user made a noticeable grammar or syntax error, false otherwise."
                 },
-                correction: {
-                    type: Type.OBJECT,
-                    description: "If grammarMistake is true, provide the exact correction here. If false, return null.",
-                    nullable: true,
-                    properties: {
-                        original: { type: Type.STRING, description: "The exact substring of what the user got wrong." },
-                        corrected: { type: Type.STRING, description: "How to say it correctly." },
-                        explanation: { type: Type.STRING, description: "A very brief 1-sentence note on why it's wrong." }
-                    }
+                correctionOriginal: {
+                    type: Type.STRING,
+                    description: "If grammarMistake is true, the exact substring the user got wrong. Otherwise empty string."
+                },
+                correctionCorrected: {
+                    type: Type.STRING,
+                    description: "If grammarMistake is true, the correct version. Otherwise empty string."
+                },
+                correctionExplanation: {
+                    type: Type.STRING,
+                    description: "If grammarMistake is true, a brief 1-sentence explanation of why it is wrong. Otherwise empty string."
                 },
                 score: {
                     type: Type.INTEGER,
-                    description: "Score the user's input from 0 to 100 based on clarity and correctness. Usually 100 if perfect, maybe 85 if slight errors."
+                    description: "Score the user's input from 0 to 100 based on clarity and correctness. Usually 100 if perfect, 85 if minor errors."
                 }
             },
-            required: ["novaResponse", "grammarMistake", "score"]
+            required: ["novaResponse", "grammarMistake", "correctionOriginal", "correctionCorrected", "correctionExplanation", "score"]
         }
 
         // Format previous history for Gemini
@@ -92,25 +98,37 @@ export async function POST(req: Request) {
             config: {
                 systemInstruction,
                 responseMimeType: 'application/json',
-                responseSchema: responseSchema,
-                temperature: 0.7, // Warm but deterministic
+                responseSchema,
+                temperature: 0.7,
             }
         })
 
-        const responseText = response.text
-        if (!responseText) {
-            throw new Error("Model returned empty text.")
+        const responseText = response.text ?? '{}'
+        if (!responseText || responseText === '{}') {
+            throw new Error("Model returned empty response.")
         }
 
-        const parsedResponse = JSON.parse(responseText)
+        const flat = JSON.parse(responseText)
+
+        // Re-shape flattened correction back into the nested format the frontend expects
+        const parsedResponse = {
+            novaResponse: flat.novaResponse,
+            grammarMistake: flat.grammarMistake,
+            correction: flat.grammarMistake ? {
+                original: flat.correctionOriginal,
+                corrected: flat.correctionCorrected,
+                explanation: flat.correctionExplanation,
+            } : null,
+            score: flat.score,
+        }
 
         return NextResponse.json(parsedResponse)
 
     } catch (error) {
         console.error("NOVA API Route Error:", error)
         return NextResponse.json({
-            error: "Failed to process chat",
-            details: error instanceof Error ? error.message : "Server Error"
+            error: "Gemini API failed",
+            details: error instanceof Error ? error.message : "Unknown server error"
         }, { status: 500 })
     }
 }
