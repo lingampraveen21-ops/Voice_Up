@@ -126,13 +126,29 @@ function SkillBar({ label, icon: Icon, color, value }: { label: string, icon: Re
     )
 }
 
+const DEFAULT_PROFILE: UserProfile = {
+    id: '',
+    xp: 0,
+    streak: 0,
+    earned_badges: '[]',
+    scores: '{}',
+}
+
+const DEFAULT_STATS: SkillData[] = [
+    { subject: 'Speaking', A: 0, fullMark: 100 },
+    { subject: 'Grammar', A: 0, fullMark: 100 },
+    { subject: 'Listening', A: 0, fullMark: 100 },
+    { subject: 'Vocabulary', A: 0, fullMark: 100 },
+    { subject: 'Writing', A: 0, fullMark: 100 },
+]
+
 export default function ProgressPage() {
     const router = useRouter()
     const supabase = createClient()
-    const [profile, setProfile] = useState<UserProfile | null>(null)
+    const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE)
     const [isLoading, setIsLoading] = useState(true)
     const [scores, setScores] = useState<Record<string, number>>({})
-    const [stats, setStats] = useState<SkillData[]>([])
+    const [stats, setStats] = useState<SkillData[]>(DEFAULT_STATS)
     const [earnedBadges, setEarnedBadges] = useState<string[]>([])
     const [recentSessions, setRecentSessions] = useState<SessionData[]>([])
     const [xpHistory, setXpHistory] = useState<{ name: string, xp: number }[]>([])
@@ -149,21 +165,8 @@ export default function ProgressPage() {
                 if (pError || !p) {
                     console.error("Profile load error:", pError)
                     setHasError(true)
-                    // Set a default empty profile
-                    setProfile({
-                        id: user.id,
-                        xp: 0,
-                        streak: 0,
-                        earned_badges: '[]',
-                        scores: '{}'
-                    } as UserProfile)
-                    setStats([
-                        { subject: 'Speaking', A: 0, fullMark: 100 },
-                        { subject: 'Grammar', A: 0, fullMark: 100 },
-                        { subject: 'Listening', A: 0, fullMark: 100 },
-                        { subject: 'Vocabulary', A: 0, fullMark: 100 },
-                        { subject: 'Writing', A: 0, fullMark: 100 },
-                    ])
+                    // Keep default values — don't reset to null
+                    setProfile(prev => ({ ...prev, id: user.id }))
                 } else {
                     setProfile(p)
                     let badgesArr: string[] = []
@@ -218,12 +221,28 @@ export default function ProgressPage() {
 
     // Loading skeleton
     if (isLoading) return (
-        <div className="min-h-screen bg-[#080810] flex items-center justify-center text-white">
-            <Zap className="w-8 h-8 text-[#6c63ff] animate-pulse" />
+        <div className="min-h-screen bg-[#080810] text-white">
+            <div className="max-w-6xl mx-auto px-4 py-12">
+                <div className="h-8 w-48 bg-white/5 rounded-lg animate-pulse mb-8" />
+                <div className="flex flex-col md:flex-row gap-6 mb-12">
+                    <div className="flex-1">
+                        <div className="h-10 w-64 bg-white/5 rounded-lg animate-pulse mb-3" />
+                        <div className="h-5 w-80 bg-white/5 rounded-lg animate-pulse" />
+                    </div>
+                    <div className="h-24 w-full md:w-72 bg-white/[0.03] border border-white/10 rounded-2xl animate-pulse" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-40 bg-white/[0.03] border border-white/10 rounded-2xl animate-pulse" />
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="h-72 bg-white/[0.03] border border-white/10 rounded-3xl animate-pulse" />
+                    <div className="h-72 bg-white/[0.03] border border-white/10 rounded-3xl animate-pulse" />
+                </div>
+            </div>
         </div>
     )
-
-    if (!profile) return null
 
     const hasActivity = (profile.xp || 0) > 0 || recentSessions.length > 0
 
