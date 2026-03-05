@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Edit3, Target, CheckCircle2, Lock, Loader2, Sparkles, Map, Clock, BookOpen, Mic2, Headphones, PenTool } from 'lucide-react'
+import { ArrowLeft, Edit3, CheckCircle2, Lock, Loader2, Sparkles, Map, Clock, BookOpen, Mic2, Headphones, PenTool } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
