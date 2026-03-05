@@ -59,8 +59,12 @@ export default function SpeakingPracticePage() {
         const fetchUser = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
-                const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-                setProfile(data)
+                const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+                if (!error && data) {
+                    setProfile(data)
+                } else if (error && error.code !== 'PGRST116') {
+                    console.error('Error fetching profile:', error)
+                }
             }
         }
         fetchUser()
@@ -71,7 +75,18 @@ export default function SpeakingPracticePage() {
         } else {
             const greeting = t("novaGreeting")
             setNovaMessage(greeting)
-            speak(greeting)
+            // Delay TTS until speech synthesis engine and voices are ready
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                const trySpeak = () => {
+                    const voices = window.speechSynthesis.getVoices()
+                    if (voices.length > 0) {
+                        speak(greeting)
+                    } else {
+                        window.speechSynthesis.onvoiceschanged = () => speak(greeting)
+                    }
+                }
+                trySpeak()
+            }
         }
 
         return () => {

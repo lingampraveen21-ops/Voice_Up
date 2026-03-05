@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import { RiveNovaAvatar } from '@/components/ui/RiveNovaAvatar'
+import { useRouter } from 'next/navigation'
 
 interface GreetingCardProps {
     name: string
@@ -11,6 +12,7 @@ interface GreetingCardProps {
 import { useTranslations } from 'next-intl'
 
 export const GreetingCard: FC<GreetingCardProps> = ({ name, streak }) => {
+    const router = useRouter()
     const t = useTranslations("Dashboard")
     const [timeOfDayKey, setTimeOfDayKey] = useState("welcome")
     const [currentTime, setCurrentTime] = useState("")
@@ -59,7 +61,13 @@ export const GreetingCard: FC<GreetingCardProps> = ({ name, streak }) => {
             </div>
 
             {/* Right NOVA Avatar (Interactive widget) */}
-            <div className="z-10 shrink-0 relative group cursor-pointer border border-white/10 rounded-2xl bg-white/5 p-4 flex items-center gap-4 hover:bg-white/10 transition-colors hidden sm:flex">
+            <div
+                onClick={() => router.push('/practice/speaking')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') router.push('/practice/speaking') }}
+                className="z-10 shrink-0 relative group cursor-pointer border border-white/10 rounded-2xl bg-white/5 p-4 flex items-center gap-4 hover:bg-white/10 transition-colors hidden sm:flex"
+            >
                 <RiveNovaAvatar currentState="idle" className="w-16 h-16 shrink-0" />
                 <div>
                     <p className="text-sm font-bold text-white flex items-center gap-1"><Sparkles className="w-4 h-4 text-primary" /> {t("askNova")}</p>

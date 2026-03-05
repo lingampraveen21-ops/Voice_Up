@@ -53,7 +53,7 @@ export default function WeeklyTestPage() {
                     type: 'test_weekly',
                     score: pct,
                     mistakes_count: WEEKLY_TEST.length - correct,
-                    duration: 10
+                    duration_seconds: 10
                 })
             }
         } catch (e) {

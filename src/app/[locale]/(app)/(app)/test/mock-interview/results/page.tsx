@@ -62,7 +62,7 @@ export default function MockInterviewResultsPage() {
                         type: 'mock_interview',
                         score: data.readyPercentage,
                         mistakes_count: data.topMistakes.length,
-                        duration: 20
+                        duration_seconds: 20
                     })
                 }
 

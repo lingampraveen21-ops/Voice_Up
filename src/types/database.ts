@@ -30,6 +30,12 @@ export interface Database {
                     interview_date: string | null
                     daily_goal_minutes: number | null
                     placement_done: boolean | null
+                    nova_voice: string | null
+                    reminder_enabled: boolean | null
+                    reminder_time: string | null
+                    generated_roadmap: string | null
+                    earned_badges: string | null
+                    description: string | null
                     created_at: string | null
                 }
                 Insert: {
@@ -52,6 +58,12 @@ export interface Database {
                     interview_date?: string | null
                     daily_goal_minutes?: number | null
                     placement_done?: boolean | null
+                    nova_voice?: string | null
+                    reminder_enabled?: boolean | null
+                    reminder_time?: string | null
+                    generated_roadmap?: string | null
+                    earned_badges?: string | null
+                    description?: string | null
                     created_at?: string | null
                 }
                 Update: {
@@ -74,6 +86,12 @@ export interface Database {
                     interview_date?: string | null
                     daily_goal_minutes?: number | null
                     placement_done?: boolean | null
+                    nova_voice?: string | null
+                    reminder_enabled?: boolean | null
+                    reminder_time?: string | null
+                    generated_roadmap?: string | null
+                    earned_badges?: string | null
+                    description?: string | null
                     created_at?: string | null
                 }
                 Relationships: [
@@ -92,6 +110,8 @@ export interface Database {
                     user_id: string
                     skill: string | null
                     lesson_id: string | null
+                    type: string | null
+                    mistakes_count: number | null
                     duration_seconds: number | null
                     score: number | null
                     xp_earned: number | null
@@ -102,6 +122,8 @@ export interface Database {
                     user_id: string
                     skill?: string | null
                     lesson_id?: string | null
+                    type?: string | null
+                    mistakes_count?: number | null
                     duration_seconds?: number | null
                     score?: number | null
                     xp_earned?: number | null
@@ -112,6 +134,8 @@ export interface Database {
                     user_id?: string
                     skill?: string | null
                     lesson_id?: string | null
+                    type?: string | null
+                    mistakes_count?: number | null
                     duration_seconds?: number | null
                     score?: number | null
                     xp_earned?: number | null

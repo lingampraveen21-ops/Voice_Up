@@ -20,6 +20,7 @@ interface ProfileData {
     streak_count: number
     streak_freeze_available: boolean
     last_active_date: string | null
+    interview_date: string | null
     xp: number
     voiceup_score: number
     reading_score: number
@@ -105,7 +106,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="col-span-1 lg:col-span-1 border-white/10 rounded-3xl h-[280px]">
                     <InterviewCard
-                        interviewDate={profile?.last_active_date || null} // Null for now unless passed explicitly through onboarding
+                        interviewDate={profile?.interview_date || null}
                         readinessScore={readinessScore}
                     />
                 </div>

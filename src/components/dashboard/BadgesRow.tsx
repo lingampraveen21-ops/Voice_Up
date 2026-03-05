@@ -3,10 +3,12 @@
 import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Shield, Zap, Flame, Star, Trophy, ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { useTranslations } from 'next-intl'
 
 export const BadgesRow: FC = () => {
+    const router = useRouter()
     const t = useTranslations("Dashboard")
     // Mock badges for the row
     const badges = [
@@ -27,7 +29,7 @@ export const BadgesRow: FC = () => {
         >
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold font-heading text-white">{t("recentBadges")}</h3>
-                <button className="text-sm font-medium text-primary inline-flex items-center gap-1 hover:text-primary-light transition-colors group">
+                <button onClick={() => router.push('/progress')} className="text-sm font-medium text-primary inline-flex items-center gap-1 hover:text-primary-light transition-colors group">
                     {t("viewAll")} <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </button>
             </div>

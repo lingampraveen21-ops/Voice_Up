@@ -1,21 +1,88 @@
 "use client"
 
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Rocket, PlayCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { GradientButton } from '../ui/GradientButton'
+import { createClient } from '@/lib/supabase/client'
+import { MODULES } from '@/data/lessons'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 import { useTranslations } from 'next-intl'
 
+interface NextLesson {
+    id: string
+    title: string
+    order: number
+    moduleTitle: string
+    totalInModule: number
+    completedInModule: number
+}
+
 export const ContinueLearningCard: FC = () => {
     const router = useRouter()
+    const supabase = createClient()
     const t = useTranslations("Dashboard")
-    // Hardcoded for presentation; could fetch "last_incomplete_lesson" from Supabase realistically
-    // Mock data check (replace with real data from props or store)
-    const hasStartedLessons = true // This should be dynamic
+    const [nextLesson, setNextLesson] = useState<NextLesson | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [hasStartedLessons, setHasStartedLessons] = useState(false)
 
-    if (!hasStartedLessons) {
+    useEffect(() => {
+        const fetchProgress = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) { setLoading(false); return }
+
+            const { data } = await supabase
+                .from('sessions')
+                .select('lesson_id')
+                .eq('user_id', user.id)
+                .eq('type', 'quiz')
+                .gte('score', 70)
+
+            const completedIds = new Set(data?.map((s: { lesson_id: string }) => s.lesson_id) || [])
+            setHasStartedLessons(completedIds.size > 0)
+
+            // Find first incomplete lesson across all modules
+            for (const mod of MODULES) {
+                for (const lesson of mod.lessons) {
+                    if (!completedIds.has(lesson.id)) {
+                        const completedInMod = mod.lessons.filter(l => completedIds.has(l.id)).length
+                        setNextLesson({
+                            id: lesson.id,
+                            title: lesson.title,
+                            order: lesson.order,
+                            moduleTitle: mod.title,
+                            totalInModule: mod.lessons.length,
+                            completedInModule: completedInMod,
+                        })
+                        setLoading(false)
+                        return
+                    }
+                }
+            }
+            // All lessons completed — show first lesson as fallback
+            if (MODULES[0]?.lessons[0]) {
+                const first = MODULES[0].lessons[0]
+                setNextLesson({
+                    id: first.id,
+                    title: first.title,
+                    order: first.order,
+                    moduleTitle: MODULES[0].title,
+                    totalInModule: MODULES[0].lessons.length,
+                    completedInModule: MODULES[0].lessons.length,
+                })
+            }
+            setLoading(false)
+        }
+        fetchProgress()
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+    if (loading) {
+        return <Skeleton className="col-span-1 md:col-span-3 lg:col-span-4 h-[140px] rounded-3xl bg-white/5" />
+    }
+
+    if (!hasStartedLessons || !nextLesson) {
         return (
             <motion.div
                 variants={{
@@ -54,28 +121,30 @@ export const ContinueLearningCard: FC = () => {
                     <div className="inline-flex px-2 py-0.5 rounded-full bg-secondary/10 text-[10px] font-bold tracking-wider text-secondary uppercase mb-2">
                         {t("inProgress")}
                     </div>
-                    <h3 className="text-xl md:text-2xl font-bold font-heading text-white mb-1">Advanced Phrasal Verbs</h3>
-                    <p className="text-sm text-zinc-400">{t("lesson", { number: 4 })} &middot; {t("remaining", { amount: 15 })}</p>
+                    <h3 className="text-xl md:text-2xl font-bold font-heading text-white mb-1">{nextLesson.title}</h3>
+                    <p className="text-sm text-zinc-400">{t("lesson", { number: nextLesson.order })} &middot; {nextLesson.moduleTitle}</p>
                 </div>
             </div>
 
             <div className="flex items-center gap-6 z-10 w-full md:w-auto">
-                <div className="hidden md:flex flex-col gap-2 w-48">
-                    <div className="flex justify-between text-xs font-mono text-zinc-400">
-                        <span>{t("progressLabel")}</span>
-                        <span className="text-white">65%</span>
+                {nextLesson.totalInModule > 0 && (
+                    <div className="hidden md:flex flex-col gap-2 w-48">
+                        <div className="flex justify-between text-xs font-mono text-zinc-400">
+                            <span>{t("progressLabel")}</span>
+                            <span className="text-white">{Math.round((nextLesson.completedInModule / nextLesson.totalInModule) * 100)}%</span>
+                        </div>
+                        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                            <motion.div
+                                className="h-full bg-secondary shadow-[0_0_10px_currentColor] shadow-secondary/50"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.round((nextLesson.completedInModule / nextLesson.totalInModule) * 100)}%` }}
+                                transition={{ duration: 1.5, ease: "easeOut" }}
+                            />
+                        </div>
                     </div>
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <motion.div
-                            className="h-full bg-secondary shadow-[0_0_10px_currentColor] shadow-secondary/50"
-                            initial={{ width: 0 }}
-                            animate={{ width: "65%" }}
-                            transition={{ duration: 1.5, ease: "easeOut" }}
-                        />
-                    </div>
-                </div>
+                )}
 
-                <GradientButton className="w-full md:w-auto px-6 py-4 flex items-center gap-2 group">
+                <GradientButton onClick={() => router.push(`/learn/${nextLesson.id}`)} className="w-full md:w-auto px-6 py-4 flex items-center gap-2 group">
                     <PlayCircle className="w-5 h-5 group-hover:scale-110 transition-transform" /> {t("continue")}
                 </GradientButton>
             </div>

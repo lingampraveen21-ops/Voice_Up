@@ -4,6 +4,7 @@ import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import { RiveNovaAvatar } from '@/components/ui/RiveNovaAvatar'
+import { useRouter } from 'next/navigation'
 
 interface NovaSuggestionCardProps {
     scores: {
@@ -17,25 +18,31 @@ interface NovaSuggestionCardProps {
 import { useTranslations } from 'next-intl'
 
 export const NovaSuggestionCard: FC<NovaSuggestionCardProps> = ({ scores }) => {
+    const router = useRouter()
     const t = useTranslations("Dashboard")
     // Determine personalized message based on the lowest scoring skill
     const minScore = Math.min(scores.reading, scores.writing, scores.listening, scores.speaking)
 
     let suggestion = t("suggestionDefault")
     let actionText = t("actionDefault")
+    let actionRoute = '/practice/speaking'
 
     if (minScore === scores.writing) {
         suggestion = t("suggestionWriting")
         actionText = t("actionWriting")
+        actionRoute = '/practice/writing'
     } else if (minScore === scores.speaking) {
         suggestion = t("suggestionSpeaking")
         actionText = t("actionSpeaking")
+        actionRoute = '/practice/speaking'
     } else if (minScore === scores.listening) {
         suggestion = t("suggestionListening")
         actionText = t("actionListening")
+        actionRoute = '/practice/listening'
     } else if (minScore === scores.reading) {
         suggestion = t("suggestionReading")
         actionText = t("actionReading")
+        actionRoute = '/practice/reading'
     }
 
     return (
@@ -58,7 +65,7 @@ export const NovaSuggestionCard: FC<NovaSuggestionCardProps> = ({ scores }) => {
                 </div>
             </div>
 
-            <button className="z-10 mt-auto w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 text-sm font-bold text-white transition-colors group-hover:border-primary/50">
+            <button onClick={() => router.push(actionRoute)} className="z-10 mt-auto w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 text-sm font-bold text-white transition-colors group-hover:border-primary/50">
                 {actionText} <ArrowRight className="w-4 h-4 text-primary" />
             </button>
 

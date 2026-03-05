@@ -48,7 +48,7 @@ export default function PreferencesTab() {
 
             const { data, error } = await supabase
                 .from("profiles")
-                .select("theme, target_voice, reminder_enabled, reminder_time")
+                .select("theme, nova_voice, reminder_enabled, reminder_time")
                 .eq("id", user.id)
                 .single()
 
@@ -60,7 +60,7 @@ export default function PreferencesTab() {
     useEffect(() => {
         if (profile) {
             if (profile.theme) setTheme(profile.theme)
-            if (profile.target_voice) setSelectedVoiceURI(profile.target_voice)
+            if (profile.nova_voice) setSelectedVoiceURI(profile.nova_voice)
             if (profile.reminder_enabled !== undefined) setReminderOn(profile.reminder_enabled)
             if (profile.reminder_time) setReminderTime(profile.reminder_time)
         }
@@ -86,17 +86,15 @@ export default function PreferencesTab() {
         mutationFn: async () => {
             if (!profile?.id) throw new Error("Missing user profile")
 
-            // We save theme, target_voice, reminder_enabled, reminder_time to Supabase
-            // If the columns don't exist yet, we will gracefully catch metadata errors 
-            // but in a real app these would be in the schema.
             const payload = {
+                id: profile.id,
                 theme,
-                target_voice: selectedVoiceURI,
+                nova_voice: selectedVoiceURI,
                 reminder_enabled: reminderOn,
                 reminder_time: reminderTime
             }
 
-            const { error } = await supabase.from("profiles").update(payload).eq("id", profile.id)
+            const { error } = await supabase.from("profiles").upsert(payload)
             if (error) throw error
 
             // LocalStorage for Reduce Motion

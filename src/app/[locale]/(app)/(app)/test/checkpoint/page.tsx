@@ -54,7 +54,7 @@ export default function CheckpointTestPage() {
                     type: 'test_checkpoint',
                     score: pct,
                     mistakes_count: CHECKPOINT_TEST.length - correct,
-                    duration: 15
+                    duration_seconds: 15
                 })
             }
         } catch (e) {

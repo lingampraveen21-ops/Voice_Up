@@ -63,7 +63,7 @@ export function LessonQuiz({ lesson, onBack }: LessonQuizProps) {
                     type: 'quiz',
                     score: pct,
                     mistakes_count: lesson.quiz.length - correct,
-                    duration: lesson.duration
+                    duration_seconds: lesson.duration
                 })
                 if (pct >= 70) toast.success(`🎉 ${pct}% — Lesson Complete! Next lesson unlocked.`)
                 else toast.error(`${pct}% — You need 70% to continue. Try again!`)

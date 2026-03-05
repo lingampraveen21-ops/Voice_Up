@@ -64,7 +64,7 @@ export default function LevelUpTestPage() {
                     user_id: user.id,
                     type: 'test_levelup',
                     score: pct,
-                    duration: 30
+                    duration_seconds: 30
                 })
             }
         } catch (e) {

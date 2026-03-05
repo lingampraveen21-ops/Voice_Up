@@ -97,7 +97,7 @@ export async function trackSessionProgress(
         }
 
         // 3. Update Streak Logic (simplified client-side implementation of DB function)
-        let newStreak = profile.streak || 0
+        let newStreak = profile.streak_count || 0
         const todayStr = new Date().toISOString().split('T')[0]
         const lastActiveStr = profile.last_active_date ? new Date(profile.last_active_date).toISOString().split('T')[0] : null
 
@@ -126,7 +126,7 @@ export async function trackSessionProgress(
         // 4. Update Profile
         await supabase.from('profiles').update({
             xp: newTotalXP,
-            streak: newStreak,
+            streak_count: newStreak,
             last_active_date: new Date().toISOString()
         }).eq('id', userId)
 

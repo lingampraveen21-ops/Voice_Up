@@ -16,7 +16,7 @@ import { Calendar } from "@/components/ui/Calendar"
 
 const profileSchema = z.object({
     full_name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name cannot exceed 50 characters"),
-    daily_goal: z.number().int(),
+    daily_goal_minutes: z.number().int(),
     interview_date: z.string().nullable()
 })
 
@@ -42,10 +42,10 @@ export default function ProfileTab() {
 
     const { register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
-        defaultValues: { full_name: "", daily_goal: 10, interview_date: null }
+        defaultValues: { full_name: "", daily_goal_minutes: 10, interview_date: null }
     })
 
-    const formDailyGoal = watch("daily_goal")
+    const formDailyGoal = watch("daily_goal_minutes")
     const formInterviewDate = watch("interview_date")
 
     const { data: profile, isLoading } = useQuery({
@@ -58,12 +58,35 @@ export default function ProfileTab() {
 
             const { data, error } = await supabase
                 .from("profiles")
-                .select("full_name, avatar_url, cefr_level, daily_goal, interview_date")
+                .select("full_name, avatar_url, cefr_level, daily_goal_minutes, interview_date")
                 .eq("id", user.id)
                 .single()
 
-            if (error && error.code !== "PGRST116") throw error
-            return { id: user.id, ...(data || {}) }
+            // Profile exists — return it
+            if (data) return { id: user.id, ...data }
+
+            // No profile row yet (PGRST116) — auto-create from auth metadata
+            if (error && error.code === "PGRST116") {
+                const newProfile = {
+                    id: user.id,
+                    full_name: user.user_metadata?.full_name || user.user_metadata?.name || "",
+                    avatar_url: user.user_metadata?.avatar_url || null,
+                    daily_goal_minutes: 10,
+                    interview_date: null,
+                    cefr_level: null,
+                }
+                const { data: created, error: upsertErr } = await supabase
+                    .from("profiles")
+                    .upsert(newProfile)
+                    .select("full_name, avatar_url, cefr_level, daily_goal_minutes, interview_date")
+                    .single()
+
+                if (upsertErr) throw upsertErr
+                return { id: user.id, ...(created || newProfile) }
+            }
+
+            if (error) throw error
+            return { id: user.id }
         }
     })
 
@@ -71,7 +94,7 @@ export default function ProfileTab() {
         if (profile) {
             reset({
                 full_name: profile.full_name || "",
-                daily_goal: profile.daily_goal || 10,
+                daily_goal_minutes: profile.daily_goal_minutes || 10,
                 interview_date: profile.interview_date || null
             })
             setAvatarUrl(profile.avatar_url || null)
@@ -84,12 +107,12 @@ export default function ProfileTab() {
             if (!profile?.id) throw new Error("Missing user profile")
             const { error } = await supabase
                 .from("profiles")
-                .update({
+                .upsert({
+                    id: profile.id,
                     full_name: values.full_name,
-                    daily_goal: values.daily_goal,
+                    daily_goal_minutes: values.daily_goal_minutes,
                     interview_date: values.interview_date
                 })
-                .eq("id", profile.id)
 
             if (error) throw error
         },
@@ -228,7 +251,7 @@ export default function ProfileTab() {
                                 <button
                                     key={goal.value}
                                     type="button"
-                                    onClick={() => setValue("daily_goal", goal.value, { shouldDirty: true })}
+                                    onClick={() => setValue("daily_goal_minutes", goal.value, { shouldDirty: true })}
                                     className={`min-w-[100px] p-4 rounded-xl border flex flex-col items-center gap-2 transition-all snap-center shrink-0 ${isSelected
                                         ? "border-[#6c63ff] bg-[#6c63ff]/20 text-white shadow-[0_0_15px_rgba(108,99,255,0.2)]"
                                         : "border-white/10 hover:bg-white/5 hover:border-white/20 text-zinc-400"

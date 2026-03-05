@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Timer, Trophy, Mic } from 'lucide-react'
 import { GradientButton } from '../ui/GradientButton'
 import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 import { useTranslations } from 'next-intl'
 
@@ -15,6 +16,7 @@ interface LeaderboardUser {
 }
 
 export const ChallengeCard: FC = () => {
+    const router = useRouter()
     const t = useTranslations("Dashboard")
     const [timeLeft, setTimeLeft] = useState("")
     const [topUsers, setTopUsers] = useState<LeaderboardUser[]>([])
@@ -123,7 +125,7 @@ export const ChallengeCard: FC = () => {
                     </p>
                 </div>
 
-                <GradientButton className="w-full md:w-auto flex items-center gap-2 px-6 py-3 whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400">
+                <GradientButton onClick={() => router.push('/challenges')} className="w-full md:w-auto flex items-center gap-2 px-6 py-3 whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400">
                     {t("acceptChallenge")} <Mic className="w-4 h-4" />
                 </GradientButton>
             </div>

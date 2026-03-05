@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
     try {
-        const { level, goal, dailyCommitment, interviewDate } = await req.json()
+        const { level, goal, dailyCommitment, interviewDate, timeline } = await req.json()
 
         if (!level || !goal) {
             return NextResponse.json({ error: 'Missing req parameters' }, { status: 400 })
@@ -16,12 +16,14 @@ export async function POST(req: Request) {
 
         const ai = new GoogleGenAI({ apiKey })
 
+        const timelineDays = timeline || 30
+
         const systemInstruction = `
         You are NOVA, an expert English Language Planner.
-        Given the user's current CEFR level (${level}), their goal (${goal}), their daily time commitment (${dailyCommitment} mins/day), and an upcoming target interview date (${interviewDate}), generate a realistic day-by-day learning roadmap.
+        Given the user's current CEFR level (${level}), their goal (${goal}), their daily time commitment (${dailyCommitment} mins/day), and an upcoming target interview date (${interviewDate}), generate a realistic day-by-day learning roadmap for ${timelineDays} days.
         
-        Generate exactly 7 major milestones (e.g., "Day 1", "Day 3", "Week 1", etc.) representing chunks of study.
-        For each, provide a title, a short actionable description, and assign it either:
+        Generate exactly 7 major milestones spread across the ${timelineDays}-day plan (e.g., "Day 1", "Day ${Math.round(timelineDays * 0.15)}", "Day ${Math.round(timelineDays * 0.3)}", etc.) representing chunks of study.
+        For each, provide a title, a short actionable description, a skill (one of: speaking, listening, reading, writing, grammar, vocabulary), and assign it either:
         "completed", "current", or "locked". Only the first one should be "current", rest "locked".
         
         Return JSON matching the schema.
@@ -39,6 +41,7 @@ export async function POST(req: Request) {
                             dayLabel: { type: Type.STRING, description: 'E.g., Day 1, Week 2, Final Prep' },
                             title: { type: Type.STRING },
                             description: { type: Type.STRING },
+                            skill: { type: Type.STRING, description: 'One of: speaking, listening, reading, writing, grammar, vocabulary' },
                             status: { type: Type.STRING, description: 'must be either: completed, current, locked' }
                         }
                     }

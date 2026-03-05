@@ -63,7 +63,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
         if (subPath !== '/onboarding' && !path.startsWith('/_next') && !subPath.startsWith('/auth/callback')) {
             const { data: profile } = await supabase
                 .from('profiles')
-                .select('placement_done, preferred_language')
+                .select('placement_done, language')
                 .eq('id', user.id)
                 .single()
 
