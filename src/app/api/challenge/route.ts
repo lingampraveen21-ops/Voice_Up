@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export const dynamic = 'force-dynamic'
 
@@ -11,7 +11,8 @@ export async function GET() {
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string })
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string)
+    const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
     try {
         const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
@@ -34,12 +35,10 @@ export async function GET() {
         Return ONLY the prompt string, no quotes, no extra text.
         `
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: aiPrompt,
-        })
+        const result = await geminiModel.generateContent(aiPrompt)
 
-        const newPrompt = response.text ? response.text.replace(/^"|"$/g, '').trim() : "Describe the most important lesson you've learned this year."
+        const responseText = result.response.text()
+        const newPrompt = responseText ? responseText.replace(/^"|"$/g, '').trim() : "Describe the most important lesson you've learned this year."
 
         // 3. Save it to Supabase so all users get the same one today
         // Note: we swallow the error if the table doesn't exist yet and just return the generated prompt gracefully.

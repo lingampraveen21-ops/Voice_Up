@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { GoogleGenAI, Type, Schema } from '@google/genai'
+import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/generative-ai'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         const apiKey = process.env.GEMINI_API_KEY
         if (!apiKey) return NextResponse.json({ error: 'API key missing' }, { status: 500 })
 
-        const ai = new GoogleGenAI({ apiKey })
+        const genAI = new GoogleGenerativeAI(apiKey)
 
         const systemInstruction = `
         You are an expert ${type} Interviewer and English Assessor.
@@ -28,51 +28,54 @@ export async function POST(req: Request) {
         Provide a final grade (A, B, C, D) and an overall "Interview Ready" percentage.
         `
 
-        const responseSchema: Schema = {
-            type: Type.OBJECT,
+        const responseSchema: ResponseSchema = {
+            type: SchemaType.OBJECT,
             properties: {
-                overallGrade: { type: Type.STRING, description: 'Single letter grade A, B, C, D, or F' },
-                readyPercentage: { type: Type.INTEGER, description: 'Percentage 0-100 indicating how interview ready they are' },
+                overallGrade: { type: SchemaType.STRING, description: 'Single letter grade A, B, C, D, or F' },
+                readyPercentage: { type: SchemaType.INTEGER, description: 'Percentage 0-100 indicating how interview ready they are' },
                 scores: {
-                    type: Type.OBJECT,
+                    type: SchemaType.OBJECT,
                     properties: {
-                        fluency: { type: Type.INTEGER, description: 'How smoothly they speak without excessive pauses 0-100' },
-                        grammar: { type: Type.INTEGER, description: 'Grammar correctness 0-100' },
-                        vocabulary: { type: Type.INTEGER, description: 'Lexical resource and appropriate word choice 0-100' },
-                        technical: { type: Type.INTEGER, description: 'Accuracy of the actual content/technical answers 0-100' },
-                        confidence: { type: Type.INTEGER, description: 'Perceived confidence based on phrasing 0-100' }
+                        fluency: { type: SchemaType.INTEGER, description: 'How smoothly they speak without excessive pauses 0-100' },
+                        grammar: { type: SchemaType.INTEGER, description: 'Grammar correctness 0-100' },
+                        vocabulary: { type: SchemaType.INTEGER, description: 'Lexical resource and appropriate word choice 0-100' },
+                        technical: { type: SchemaType.INTEGER, description: 'Accuracy of the actual content/technical answers 0-100' },
+                        confidence: { type: SchemaType.INTEGER, description: 'Perceived confidence based on phrasing 0-100' }
                     },
                     required: ['fluency', 'grammar', 'vocabulary', 'technical', 'confidence']
                 },
                 topMistakes: {
-                    type: Type.ARRAY,
+                    type: SchemaType.ARRAY,
                     description: 'Top 3 pronunciation or grammar mistakes made across all answers',
                     items: {
-                        type: Type.OBJECT,
+                        type: SchemaType.OBJECT,
                         properties: {
-                            original: { type: Type.STRING },
-                            corrected: { type: Type.STRING },
-                            explanation: { type: Type.STRING }
+                            original: { type: SchemaType.STRING },
+                            corrected: { type: SchemaType.STRING },
+                            explanation: { type: SchemaType.STRING }
                         }
                     }
                 },
-                feedback: { type: Type.STRING, description: 'A short 2-3 sentence overall summary of their performance.' }
+                feedback: { type: SchemaType.STRING, description: 'A short 2-3 sentence overall summary of their performance.' }
             },
             required: ['overallGrade', 'readyPercentage', 'scores', 'topMistakes', 'feedback']
         }
 
-        const response = await ai.models.generateContent({
+        const model = genAI.getGenerativeModel({
             model: 'gemini-2.0-flash',
-            contents: [{ role: 'user', parts: [{ text: 'Please evaluate the interview responses.' }] }],
-            config: {
-                systemInstruction,
+            systemInstruction,
+            generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema,
                 temperature: 0.2
             }
         })
 
-        const parsed = JSON.parse(response.text ?? '{}')
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts: [{ text: 'Please evaluate the interview responses.' }] }]
+        })
+
+        const parsed = JSON.parse(result.response.text() ?? '{}')
         return NextResponse.json(parsed)
 
     } catch (error) {

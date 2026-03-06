@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { GoogleGenAI, Type, Schema } from '@google/genai'
+import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/generative-ai'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         const apiKey = process.env.GEMINI_API_KEY
         if (!apiKey) return NextResponse.json({ error: 'API key missing' }, { status: 500 })
 
-        const ai = new GoogleGenAI({ apiKey })
+        const genAI = new GoogleGenerativeAI(apiKey)
 
         const systemInstruction = `
     You are an English writing coach grading a student's text.
@@ -21,51 +21,54 @@ export async function POST(req: Request) {
     Scores are 0-100. Identify real mistakes, not nitpicks.
     `
 
-        const responseSchema: Schema = {
-            type: Type.OBJECT,
+        const responseSchema: ResponseSchema = {
+            type: SchemaType.OBJECT,
             properties: {
                 scores: {
-                    type: Type.OBJECT,
+                    type: SchemaType.OBJECT,
                     properties: {
-                        grammar: { type: Type.INTEGER, description: 'Grammar correctness 0-100' },
-                        formality: { type: Type.INTEGER, description: 'Appropriate register/formality 0-100' },
-                        structure: { type: Type.INTEGER, description: 'Logical organization 0-100' },
-                        tone: { type: Type.INTEGER, description: 'Tone consistency and clarity 0-100' },
+                        grammar: { type: SchemaType.INTEGER, description: 'Grammar correctness 0-100' },
+                        formality: { type: SchemaType.INTEGER, description: 'Appropriate register/formality 0-100' },
+                        structure: { type: SchemaType.INTEGER, description: 'Logical organization 0-100' },
+                        tone: { type: SchemaType.INTEGER, description: 'Tone consistency and clarity 0-100' },
                     },
                     required: ['grammar', 'formality', 'structure', 'tone']
                 },
                 mistakes: {
-                    type: Type.ARRAY,
+                    type: SchemaType.ARRAY,
                     items: {
-                        type: Type.OBJECT,
+                        type: SchemaType.OBJECT,
                         properties: {
-                            original: { type: Type.STRING },
-                            corrected: { type: Type.STRING },
-                            explanation: { type: Type.STRING }
+                            original: { type: SchemaType.STRING },
+                            corrected: { type: SchemaType.STRING },
+                            explanation: { type: SchemaType.STRING }
                         }
                     }
                 },
                 suggestions: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING }
+                    type: SchemaType.ARRAY,
+                    items: { type: SchemaType.STRING }
                 },
-                overallFeedback: { type: Type.STRING, description: 'One encouraging sentence of overall feedback' }
+                overallFeedback: { type: SchemaType.STRING, description: 'One encouraging sentence of overall feedback' }
             },
             required: ['scores', 'mistakes', 'suggestions', 'overallFeedback']
         }
 
-        const response = await ai.models.generateContent({
+        const model = genAI.getGenerativeModel({
             model: 'gemini-2.0-flash',
-            contents: [{ role: 'user', parts: [{ text: `Please grade this text:\n\n"${userText}"` }] }],
-            config: {
-                systemInstruction,
+            systemInstruction,
+            generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema,
                 temperature: 0.3
             }
         })
 
-        const parsed = JSON.parse(response.text ?? '{}')
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts: [{ text: `Please grade this text:\n\n"${userText}"` }] }]
+        })
+
+        const parsed = JSON.parse(result.response.text() ?? '{}')
         return NextResponse.json(parsed)
 
     } catch (error) {

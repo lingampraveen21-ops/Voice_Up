@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +14,13 @@ export async function POST(req: NextRequest) {
             })
         }
 
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string })
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string)
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.0-flash",
+            generationConfig: {
+                responseMimeType: "application/json",
+            }
+        })
 
         const prompt = `
         You are an expert English Language evaluator.
@@ -39,15 +45,9 @@ export async function POST(req: NextRequest) {
         }
         `
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-            }
-        })
+        const result = await model.generateContent(prompt)
 
-        const rawText = response.text || "{}"
+        const rawText = result.response.text() || "{}"
         const parsed = JSON.parse(rawText)
 
         const overall = Math.round((parsed.fluency + parsed.grammar + parsed.vocabulary) / 3)

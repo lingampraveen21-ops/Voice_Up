@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { GoogleGenAI, Type, Schema } from '@google/genai'
+import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/generative-ai'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,8 +16,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Gemini API Key is missing. Check .env.local" }, { status: 500 })
         }
 
-        // Initialize the official Gemini SDK
-        const ai = new GoogleGenAI({ apiKey })
+        const genAI = new GoogleGenerativeAI(apiKey)
 
         // Language specific context
         const localeNames: Record<string, string> = {
@@ -48,34 +47,31 @@ export async function POST(req: Request) {
     If there is no grammar mistake, set grammarMistake to false and leave correctionOriginal, correctionCorrected, correctionExplanation as empty strings.
     `
 
-        // Define the schema Gemini must return.
-        // NOTE: Gemini structured output does not support nullable OBJECT types reliably.
-        // We flatten the correction object into top-level string fields instead.
-        const responseSchema: Schema = {
-            type: Type.OBJECT,
+        const responseSchema: ResponseSchema = {
+            type: SchemaType.OBJECT,
             properties: {
                 novaResponse: {
-                    type: Type.STRING,
+                    type: SchemaType.STRING,
                     description: "NOVA's conversational reply to the user. Keep it under 3 sentences."
                 },
                 grammarMistake: {
-                    type: Type.BOOLEAN,
+                    type: SchemaType.BOOLEAN,
                     description: "True if the user made a noticeable grammar or syntax error, false otherwise."
                 },
                 correctionOriginal: {
-                    type: Type.STRING,
+                    type: SchemaType.STRING,
                     description: "If grammarMistake is true, the exact substring the user got wrong. Otherwise empty string."
                 },
                 correctionCorrected: {
-                    type: Type.STRING,
+                    type: SchemaType.STRING,
                     description: "If grammarMistake is true, the correct version. Otherwise empty string."
                 },
                 correctionExplanation: {
-                    type: Type.STRING,
+                    type: SchemaType.STRING,
                     description: "If grammarMistake is true, a brief 1-sentence explanation of why it is wrong. Otherwise empty string."
                 },
                 score: {
-                    type: Type.INTEGER,
+                    type: SchemaType.INTEGER,
                     description: "Score the user's input from 0 to 100 based on clarity and correctness. Usually 100 if perfect, 85 if minor errors."
                 }
             },
@@ -89,21 +85,24 @@ export async function POST(req: Request) {
             parts: [{ text: msg.content }]
         })) || []
 
-        const response = await ai.models.generateContent({
+        const model = genAI.getGenerativeModel({
             model: 'gemini-2.0-flash',
-            contents: [
-                ...formattedHistory,
-                { role: 'user', parts: [{ text: userMessage }] }
-            ],
-            config: {
-                systemInstruction,
+            systemInstruction,
+            generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema,
                 temperature: 0.7,
             }
         })
 
-        const responseText = response.text ?? '{}'
+        const result = await model.generateContent({
+            contents: [
+                ...formattedHistory,
+                { role: 'user', parts: [{ text: userMessage }] }
+            ]
+        })
+
+        const responseText = result.response.text()
         if (!responseText || responseText === '{}') {
             throw new Error("Model returned empty response.")
         }
