@@ -81,7 +81,9 @@ export async function trackSessionProgress(
 ) {
     try {
         // 1. Fetch current profile
-        let { data: profile, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+        const result = await supabase.from('profiles').select('*').eq('id', userId).single()
+        let profile = result.data
+        const error = result.error
         if (error && error.code === 'PGRST116') {
             // Profile doesn't exist yet, create it
             const { data: newProfile } = await supabase.from('profiles').upsert({

@@ -214,7 +214,7 @@ export default function ProgressPage() {
                     setRecentSessions(sessions)
                     // Build XP history from real sessions
                     const grouped: Record<string, number> = {}
-                    sessions.slice().reverse().forEach((s: any) => {
+                    sessions.slice().reverse().forEach((s: SessionData) => {
                         const day = new Date(s.created_at).toLocaleDateString('en-US', { weekday: 'short' })
                         grouped[day] = (grouped[day] || 0) + (s.score || 0)
                     })
