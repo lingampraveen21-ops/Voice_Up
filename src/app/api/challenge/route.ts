@@ -12,7 +12,7 @@ export async function GET() {
     )
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string)
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite-preview-06-17" })
+    const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" })
     try {
         const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
