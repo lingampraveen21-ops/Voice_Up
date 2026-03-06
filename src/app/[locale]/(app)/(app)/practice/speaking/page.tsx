@@ -50,6 +50,7 @@ export default function SpeakingPracticePage() {
     const [sessionComplete, setSessionComplete] = useState(false)
     const [showConsent, setShowConsent] = useState(false)
     const silenceTimer = useRef<NodeJS.Timeout | null>(null)
+    const isProcessingRef = useRef(false)
     const MAX_EXCHANGES = 5
 
     // 1. Initial Setup
@@ -99,6 +100,12 @@ export default function SpeakingPracticePage() {
     useEffect(() => {
         const processTranscript = async () => {
             if (!isListening && transcript.trim().length > 0 && !isThinking && !isSpeaking) {
+                if (isProcessingRef.current) return
+                isProcessingRef.current = true
+
+                // Small delay to avoid rapid-fire requests
+                await new Promise(resolve => setTimeout(resolve, 500))
+
                 setThinking(true)
                 addMessageToHistory({ role: 'user', content: transcript })
 
@@ -137,8 +144,12 @@ export default function SpeakingPracticePage() {
 
                     setExchangeCount(prev => prev + 1)
 
+                    // Cancel any ongoing speech before speaking Nova's reply
+                    window.speechSynthesis.cancel()
+
                     // Speak Nova's reply, then auto-restart mic for seamless conversation
                     speak(data.novaResponse, () => {
+                        isProcessingRef.current = false
                         if (exchangeCount + 1 < MAX_EXCHANGES) {
                             startListening()
                         }
@@ -148,6 +159,7 @@ export default function SpeakingPracticePage() {
                     console.error("Failed to generate NOVA response:", error)
                     toast.error("NOVA is having trouble connecting to the network.")
                     setThinking(false)
+                    isProcessingRef.current = false
                 }
             }
         }
