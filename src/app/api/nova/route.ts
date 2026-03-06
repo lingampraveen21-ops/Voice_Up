@@ -111,7 +111,7 @@ export async function POST(req: Request) {
         let flat
         try {
             flat = JSON.parse(responseText)
-        } catch (parseErr) {
+        } catch {
             console.error("Failed to parse Gemini response:", responseText)
             throw new Error("Gemini returned invalid JSON")
         }

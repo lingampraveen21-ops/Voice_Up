@@ -39,7 +39,7 @@ export default function SpeakingPracticePage() {
     } = useNovaStore()
 
     const { isSupported, startRecording: startListening, stopRecording: stopListening, error: micError } = useVoiceRecorder()
-    const { speak, stop: stopSpeaking, voicesReady } = useSpeechSynthesis()
+    const { speak, stop: stopSpeaking } = useSpeechSynthesis()
 
     const [profile, setProfile] = useState<SpeakingProfileData | null>(null)
     const [novaMessage, setNovaMessage] = useState("")
@@ -153,7 +153,7 @@ export default function SpeakingPracticePage() {
         }
 
         processTranscript()
-    }, [isListening, transcript, isThinking, isSpeaking, conversationHistory, topic, profile, addMessageToHistory, speak, t, setThinking])
+    }, [isListening, transcript, isThinking, isSpeaking, conversationHistory, topic, profile, addMessageToHistory, speak, t, setThinking, exchangeCount, startListening])
 
     // 3. Silence Detection Logic
     useEffect(() => {
