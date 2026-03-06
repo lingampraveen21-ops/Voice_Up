@@ -3,6 +3,15 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export const dynamic = 'force-dynamic'
 
+export async function GET() {
+  const apiKey = process.env.GEMINI_API_KEY
+  return NextResponse.json({ 
+    apiKeyExists: !!apiKey,
+    apiKeyLength: apiKey?.length || 0,
+    apiKeyPrefix: apiKey?.substring(0, 8) || 'missing'
+  })
+}
+
 export async function POST(req: Request) {
   try {
     const { userGoal, level } = await req.json()
@@ -19,7 +28,9 @@ export async function POST(req: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey)
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    console.log('Model created, sending prompt...')
+    console.log('API Key exists:', !!process.env.GEMINI_API_KEY)
 
     const today = new Date().toISOString().split('T')[0]
 
