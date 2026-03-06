@@ -71,7 +71,7 @@ export function FeedbackWidget() {
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
-                    className="fixed bottom-6 right-6 z-[60] w-full max-w-sm"
+                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-[calc(100%-2rem)] sm:w-full max-w-sm"
                 >
                     <div className="glass-morphism border border-white/10 rounded-3xl p-6 shadow-2xl overflow-hidden relative">
                         <button

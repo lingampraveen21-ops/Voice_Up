@@ -63,7 +63,7 @@ export function HowItWorksSection() {
                     <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 relative">
                     {/* Desktop Connecting Line */}
                     <div className="hidden md:block absolute top-[4.5rem] left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent -z-10" />
 

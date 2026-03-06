@@ -9,7 +9,7 @@ export const GradientButton = React.forwardRef<HTMLButtonElement, GradientButton
             <button
                 ref={ref}
                 className={cn(
-                    "relative inline-flex items-center justify-center rounded-full px-6 py-3 font-semibold text-white transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50",
+                    "relative inline-flex items-center justify-center rounded-full px-6 py-3 font-semibold text-white transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50 min-h-[44px]",
                     "bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/20",
                     className
                 )}

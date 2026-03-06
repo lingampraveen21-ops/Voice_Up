@@ -101,7 +101,7 @@ export default function WritingPage() {
 
     return (
         <div className="min-h-screen bg-[#080810] text-white">
-            <div className="max-w-2xl mx-auto px-4 py-10">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
                 <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors text-sm">
                     <ArrowLeft className="w-4 h-4" /> {t("returnBtn")}
                 </button>
@@ -158,7 +158,7 @@ export default function WritingPage() {
                     <button
                         onClick={handleSubmit}
                         disabled={grading || wordCount < 20}
-                        className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 disabled:opacity-50 transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 disabled:opacity-50 transition-all min-h-[44px] shadow-[0_0_20px_rgba(168,85,247,0.3)] flex items-center justify-center gap-2"
                     >
                         {grading ? <><span className="animate-spin">⟳</span> {t("grading")}</> : t("submit")}
                     </button>

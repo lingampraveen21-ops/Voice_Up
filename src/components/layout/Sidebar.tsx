@@ -70,18 +70,18 @@ export function Sidebar() {
                 </div>
             </div>
 
-            <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-raised border-t border-white/5 flex items-center justify-around z-50">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-raised border-t border-white/5 flex items-center justify-around z-50 px-1">
                 {NAV_ITEMS.slice(0, 5).map((item) => (
-                    <Link key={item.href} href={item.href} className="flex flex-col items-center">
+                    <Link key={item.href} href={item.href} className="flex flex-col items-center min-h-[44px] min-w-[44px] justify-center">
                         <div
                             className={cn(
                                 "p-2 rounded-full transition-colors",
                                 item.isAction ? "bg-secondary text-white -mt-5 h-12 w-12 flex items-center justify-center shadow-lg" : pathname === item.href ? "text-primary" : "text-muted-foreground"
                             )}
                         >
-                            <item.icon className="h-6 w-6" />
+                            <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
-                        {!item.isAction && <span className="text-[10px] text-muted-foreground mt-1">{item.name}</span>}
+                        {!item.isAction && <span className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 leading-tight truncate max-w-[56px] text-center">{item.name}</span>}
                     </Link>
                 ))}
             </div>

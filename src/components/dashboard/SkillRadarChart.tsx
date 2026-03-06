@@ -41,7 +41,7 @@ export const SkillRadarChart: FC<SkillRadarChartProps> = ({ scores }) => {
                 </div>
             </div>
 
-            <div style={{ width: '100%', height: 250, minWidth: 0 }} className="z-10">
+            <div style={{ width: '100%', minWidth: 0 }} className="z-10 h-[200px] sm:h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
                         <PolarGrid stroke="rgba(255,255,255,0.1)" />

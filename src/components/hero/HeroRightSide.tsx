@@ -25,7 +25,7 @@ export function HeroRightSide() {
     }, []);
 
     return (
-        <div className="relative h-[600px] w-full flex items-center justify-center pointer-events-none">
+        <div className="relative h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] w-full flex items-center justify-center pointer-events-none">
             {/* 3D Sphere Background */}
             <div className="absolute inset-0">
                 <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>

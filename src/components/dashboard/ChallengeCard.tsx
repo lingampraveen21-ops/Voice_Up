@@ -109,7 +109,7 @@ export const ChallengeCard: FC = () => {
                     </p>
                 </div>
 
-                <GradientButton onClick={() => router.push('/challenges')} className="w-full md:w-auto flex items-center gap-2 px-6 py-3 whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400">
+                <GradientButton onClick={() => router.push('/challenges')} className="w-full md:w-auto flex items-center gap-2 px-6 py-3 min-h-[44px] whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400">
                     {t("acceptChallenge")} <Mic className="w-4 h-4" />
                 </GradientButton>
             </div>

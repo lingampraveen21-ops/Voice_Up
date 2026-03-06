@@ -26,7 +26,7 @@ export function MicConsentModal({ onAllow, onCancel }: MicConsentModalProps) {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-lg bg-[#0f0f1a] border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
+                className="relative w-full max-w-lg bg-[#0f0f1a] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
             >
                 {/* Background Glow */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 blur-[80px] rounded-full" />

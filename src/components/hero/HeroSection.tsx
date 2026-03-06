@@ -47,18 +47,18 @@ export function HeroSection() {
         <AuroraBackground className="min-h-screen relative overflow-hidden" showRadialGradient>
             <HeroParticles />
 
-            <div className="container mx-auto px-4 md:px-8 pt-32 pb-16 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="container mx-auto px-4 md:px-8 pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
                 {/* Left Side: Content */}
                 <div ref={containerRef} className="flex flex-col gap-8 items-start">
                     <AnimatedBadge text={t("badge")} />
 
                     <AnimatedHeading text={t("heading")} />
 
-                    <div className="hero-buttons flex flex-wrap items-center gap-4 mt-4">
-                        <GradientButton className="text-lg px-8 py-6">
+                    <div className="hero-buttons flex flex-wrap items-center gap-3 sm:gap-4 mt-4">
+                        <GradientButton className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 min-h-[44px]">
                             {t("startFree")}
                         </GradientButton>
-                        <GhostButton className="text-lg px-8 py-6 gap-2">
+                        <GhostButton className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 gap-2 min-h-[44px]">
                             <Play className="h-5 w-5 fill-current" />
                             {t("watchDemo")}
                         </GhostButton>

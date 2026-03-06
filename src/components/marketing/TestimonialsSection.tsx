@@ -60,7 +60,7 @@ interface TestimonialCardProps {
 
 function TestimonialCard({ name, country, role, quote, idx }: TestimonialCardProps) {
     return (
-        <GlassCard className="w-[350px] md:w-[400px] flex-shrink-0 mx-2 flex flex-col justify-between h-full bg-surface/50 border-white/5 hover:border-white/20 transition-colors">
+        <GlassCard className="w-[280px] sm:w-[350px] md:w-[400px] flex-shrink-0 mx-2 flex flex-col justify-between h-full bg-surface/50 border-white/5 hover:border-white/20 transition-colors">
             <div className="flex flex-col gap-4">
                 <div className="flex text-warning text-sm">
                     {[1, 2, 3, 4, 5].map((i) => (

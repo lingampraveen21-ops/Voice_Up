@@ -110,7 +110,7 @@ export default function ListeningPage() {
 
     return (
         <div className="min-h-screen bg-[#080810] text-white">
-            <div className="max-w-2xl mx-auto px-4 py-10">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
                 <button onClick={() => router.push('/dashboard')} className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors text-sm">
                     <ArrowLeft className="w-4 h-4" /> {t("returnBtn")}
                 </button>
@@ -122,7 +122,7 @@ export default function ListeningPage() {
                     <p className="font-semibold text-white mb-1">{passage.title}</p>
                     <p className="text-xs text-zinc-500 mb-5">{t("followAlong")}</p>
 
-                    <div className="flex items-center gap-1 h-14 mb-5 justify-center">
+                    <div className="flex items-center gap-1 h-10 sm:h-14 mb-5 justify-center">
                         {bars.map((h, i) => (
                             <motion.div
                                 key={i}
@@ -134,10 +134,10 @@ export default function ListeningPage() {
                         ))}
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <button
                             onClick={playAudio}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${isPlaying ? 'bg-red-500 text-white' : 'bg-primary text-white hover:bg-primary/90'}`}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px] ${isPlaying ? 'bg-red-500 text-white' : 'bg-primary text-white hover:bg-primary/90'}`}
                         >
                             {isPlaying ? <><Pause className="w-4 h-4" /> {t("stop")}</> : <><Play className="w-4 h-4" /> {t("play")}</>}
                         </button>
@@ -146,7 +146,7 @@ export default function ListeningPage() {
                                 <button
                                     key={s}
                                     onClick={() => handleSpeedChange(s)}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${speed === s ? 'bg-primary text-white' : 'bg-white/10 text-zinc-400 hover:bg-white/20'}`}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[36px] ${speed === s ? 'bg-primary text-white' : 'bg-white/10 text-zinc-400 hover:bg-white/20'}`}
                                 >
                                     {s}×
                                 </button>
@@ -161,7 +161,7 @@ export default function ListeningPage() {
                         {passage.questions.map((q) => (
                             <div key={q.q} className="bg-white/[0.04] border border-white/10 rounded-xl p-4">
                                 <p className="text-sm text-zinc-200 mb-3">{q.q}</p>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {q.options.map(opt => {
                                         const sel = answers[q.q] === opt
                                         const correct = submitted && opt === q.answer
@@ -170,7 +170,7 @@ export default function ListeningPage() {
                                             <button
                                                 key={opt}
                                                 onClick={() => !submitted && setAnswers(p => ({ ...p, [q.q]: opt }))}
-                                                className={`p-2.5 rounded-lg text-xs text-left border transition-all ${correct ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300' :
+                                                className={`p-2.5 rounded-lg text-xs text-left border transition-all min-h-[44px] ${correct ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300' :
                                                     wrong ? 'border-red-500 bg-red-500/10 text-red-300' :
                                                         sel ? 'border-primary bg-primary/10 text-white' :
                                                             'border-white/10 text-zinc-400 hover:border-white/30'
@@ -208,7 +208,7 @@ export default function ListeningPage() {
                 </div>
 
                 {!submitted ? (
-                    <button onClick={handleSubmit} className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all">
+                    <button onClick={handleSubmit} className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all min-h-[44px]">
                         {t("submit")}
                     </button>
                 ) : (

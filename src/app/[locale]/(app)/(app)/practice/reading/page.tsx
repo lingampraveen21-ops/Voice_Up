@@ -195,7 +195,7 @@ export default function ReadingPage() {
                             )
                         })}
                     </div>
-                    <button onClick={checkBlanks} disabled={blanksChecked} className="mt-5 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-all">
+                    <button onClick={checkBlanks} disabled={blanksChecked} className="mt-5 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-all min-h-[44px]">
                         {t("checkAnswers")}
                     </button>
                 </div>
@@ -207,7 +207,7 @@ export default function ReadingPage() {
                     <button
                         onClick={isListening ? stopRecording : handleStartSummary}
                         disabled={!isSupported}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30'
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px] ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30'
                             } disabled:opacity-50`}
                     >
                         <Mic className="w-4 h-4" />
@@ -222,7 +222,7 @@ export default function ReadingPage() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                         style={{ top: popup.y, left: Math.min(popup.x, typeof window !== 'undefined' ? window.innerWidth - 280 : 800) }}
-                        className="fixed z-50 w-64 bg-zinc-900 border border-white/20 rounded-xl p-4 shadow-2xl pointer-events-none"
+                        className="fixed z-50 w-60 sm:w-64 bg-zinc-900 border border-white/20 rounded-xl p-4 shadow-2xl pointer-events-none"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <p className="font-bold text-primary capitalize mb-2">{popup.word}</p>

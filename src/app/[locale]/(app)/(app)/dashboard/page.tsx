@@ -86,7 +86,7 @@ export default function DashboardPage() {
     const readinessScore = Math.min(100, Math.round((totalSkill / 100) * 100))
 
     return (
-        <div className="min-h-screen bg-[#080810] text-white p-4 md:p-8 lg:p-12 overflow-x-hidden">
+        <div className="min-h-screen bg-[#080810] text-white p-4 sm:p-6 md:p-8 lg:p-12 overflow-x-hidden">
 
             {/* Background ambient light */}
             <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 blur-[150px] rounded-full pointer-events-none z-0" />

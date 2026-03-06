@@ -41,8 +41,8 @@ export function Navbar() {
                 <div className="container mx-auto px-4 md:px-8 flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
-                        <span className="text-2xl">🎙️</span>
-                        <span className="text-2xl font-bold font-heading text-foreground">VoiceUp</span>
+                        <span className="text-xl sm:text-2xl">🎙️</span>
+                        <span className="text-xl sm:text-2xl font-bold font-heading text-foreground">VoiceUp</span>
                     </Link>
 
                     {/* Desktop Links */}
@@ -79,7 +79,7 @@ export function Navbar() {
                         <ThemeToggle />
                         <LanguageSwitcher />
                         <button
-                            className="text-white"
+                            className="text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -112,10 +112,10 @@ export function Navbar() {
                         <div className="h-px w-full bg-white/10 my-4" />
                         <div className="flex flex-col gap-4">
                             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                                <GhostButton className="w-full justify-center">{t("login")}</GhostButton>
+                                <GhostButton className="w-full justify-center min-h-[44px]">{t("login")}</GhostButton>
                             </Link>
                             <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                                <GradientButton className="w-full justify-center">{t("signUp")}</GradientButton>
+                                <GradientButton className="w-full justify-center min-h-[44px]">{t("signUp")}</GradientButton>
                             </Link>
                         </div>
                     </motion.div>

@@ -41,14 +41,14 @@ export function ProblemSolutionSection() {
     return (
         <section className="py-24 md:py-32 relative overflow-hidden" ref={containerRef}>
             <div className="container mx-auto px-4 md:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24 items-center max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-24 items-center max-w-6xl mx-auto">
 
                     {/* Problem */}
                     <div className="problem-text flex flex-col gap-6 text-center md:text-right md:border-r border-white/10 md:pr-12 lg:pr-24">
                         <div className="mx-auto md:ml-auto md:mr-0 h-16 w-16 rounded-full bg-error/10 flex items-center justify-center text-error mb-2">
                             <MicOff className="h-8 w-8" />
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-heading font-bold text-white/50 line-through decoration-error/50 decoration-2">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-white/50 line-through decoration-error/50 decoration-2">
                             {tp("heading")}
                         </h2>
                         <p className="text-muted-foreground text-lg">
@@ -64,7 +64,7 @@ export function ProblemSolutionSection() {
                         <div className="mx-auto md:ml-0 md:mr-auto h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-2 ring-2 ring-primary/50 ring-offset-4 ring-offset-background">
                             <Mic className="h-8 w-8" />
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary relative z-10">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary relative z-10">
                             {ts("heading")}
                         </h2>
                         <p className="text-lg text-white/80 relative z-10">

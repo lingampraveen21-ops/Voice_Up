@@ -68,7 +68,7 @@ export function BugReporter() {
 
             <AnimatePresence>
                 {isOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-end justify-end p-6 pointer-events-none">
+                    <div className="fixed inset-0 z-[100] flex items-end justify-end p-4 sm:p-6 pointer-events-none">
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -123,7 +123,7 @@ export function BugReporter() {
                                 <button
                                     disabled={!description.trim() || isSubmitting}
                                     onClick={handleSubmit}
-                                    className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-h-[44px] flex items-center justify-center gap-2"
                                 >
                                     {isSubmitting ? "..." : <><Send className="w-4 h-4" /> {t("submit")}</>}
                                 </button>

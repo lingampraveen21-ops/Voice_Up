@@ -46,7 +46,7 @@ export function NovaDemoSection() {
                     <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
                 </div>
 
-                <div className="relative max-w-2xl mx-auto h-[400px] flex items-center justify-center">
+                <div className="relative max-w-2xl mx-auto h-[350px] sm:h-[400px] flex items-center justify-center">
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -63,7 +63,7 @@ export function NovaDemoSection() {
                                 animate={{ opacity: 1, x: 0, scale: 1 }}
                                 exit={{ opacity: 0, x: -20, scale: 0.9 }}
                                 transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                                className="absolute top-[20%] left-0 md:left-[10%] bg-surface-raised border border-white/10 px-6 py-4 rounded-2xl rounded-br-sm shadow-xl z-20 max-w-[280px]"
+                                className="absolute top-[20%] left-0 md:left-[10%] bg-surface-raised border border-white/10 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl rounded-br-sm shadow-xl z-20 max-w-[240px] sm:max-w-[280px]"
                             >
                                 <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">You</div>
                                 <div className="text-white text-lg">{currentMessage}</div>
@@ -79,7 +79,7 @@ export function NovaDemoSection() {
                                 animate={{ opacity: 1, x: 0, scale: 1 }}
                                 exit={{ opacity: 0, x: 20, scale: 0.9 }}
                                 transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                                className="absolute bottom-[20%] right-0 md:right-[10%] bg-gradient-to-r from-secondary/20 to-primary/20 backdrop-blur-md border border-secondary/30 px-6 py-4 rounded-2xl rounded-bl-sm shadow-[0_10px_40px_rgba(255,101,132,0.2)] z-20 max-w-[300px]"
+                                className="absolute bottom-[20%] right-0 md:right-[10%] bg-gradient-to-r from-secondary/20 to-primary/20 backdrop-blur-md border border-secondary/30 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl rounded-bl-sm shadow-[0_10px_40px_rgba(255,101,132,0.2)] z-20 max-w-[260px] sm:max-w-[300px]"
                             >
                                 <div className="text-xs text-secondary mb-1 uppercase tracking-wider font-semibold flex items-center gap-2">
                                     <span className="relative flex h-2 w-2">

@@ -26,7 +26,7 @@ export function AnimatedHeading({ text }: { text: string }) {
 
     return (
         <div ref={containerRef} className="flex flex-col gap-6">
-            <h1 className="text-5xl md:text-7xl font-bold font-heading text-white tracking-tight flex flex-wrap gap-x-4 gap-y-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold font-heading text-white tracking-tight flex flex-wrap gap-x-3 sm:gap-x-4 gap-y-2">
                 {words.map((word, i) => (
                     <span key={i} className="hero-word overflow-hidden inline-block clip-path-bottom">
                         <span className="inline-block">{word}</span>
@@ -34,7 +34,7 @@ export function AnimatedHeading({ text }: { text: string }) {
                 ))}
             </h1>
 
-            <p className="hero-subtext text-xl md:text-2xl text-muted-foreground max-w-2xl font-body">
+            <p className="hero-subtext text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl font-body">
                 The only app that makes you speak — not type.
             </p>
         </div>

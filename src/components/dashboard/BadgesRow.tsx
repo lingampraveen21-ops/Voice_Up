@@ -34,14 +34,14 @@ export const BadgesRow: FC = () => {
                 </button>
             </div>
 
-            <div className="flex items-center gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
+            <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
                 {badges.some(b => b.earned) ? (
                     badges.map((b) => {
                         const Icon = b.icon
                         return (
                             <div
                                 key={b.id}
-                                className={`snap-start shrink-0 w-32 h-32 rounded-2xl border flex flex-col items-center justify-center p-4 text-center transition-all ${b.bg} ${b.earned ? 'hover:scale-105' : 'opacity-50 grayscale'}`}
+                                className={`snap-start shrink-0 w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border flex flex-col items-center justify-center p-3 sm:p-4 text-center transition-all ${b.bg} ${b.earned ? 'hover:scale-105' : 'opacity-50 grayscale'}`}
                             >
                                 <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-3">
                                     <Icon className={`w-6 h-6 ${b.color} ${b.earned ? 'drop-shadow-[0_0_10px_currentColor]' : ''}`} />

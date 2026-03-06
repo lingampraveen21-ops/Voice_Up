@@ -284,8 +284,8 @@ export default function SpeakingPracticePage() {
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[150px] rounded-full mix-blend-screen pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/10 blur-[150px] rounded-full mix-blend-screen pointer-events-none" />
 
-            <header className="flex items-center justify-between p-6 z-10 w-full max-w-4xl mx-auto">
-                <button onClick={() => router.push('/dashboard')} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+            <header className="flex items-center justify-between p-4 sm:p-6 z-10 w-full max-w-4xl mx-auto">
+                <button onClick={() => router.push('/dashboard')} className="p-2 hover:bg-white/10 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                     <ArrowLeft className="w-6 h-6" />
                 </button>
                 <div className="flex flex-col items-center">
@@ -306,16 +306,16 @@ export default function SpeakingPracticePage() {
                 </div>
             </header>
 
-            <main className="flex-1 flex flex-col items-center justify-center p-6 z-10 w-full max-w-4xl mx-auto mb-24">
-                <div className="relative mb-12">
-                    <RiveNovaAvatar currentState={currentState} className="w-40 h-40 md:w-56 md:h-56 z-10" />
+            <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 z-10 w-full max-w-4xl mx-auto mb-20 sm:mb-24">
+                <div className="relative mb-8 sm:mb-12">
+                    <RiveNovaAvatar currentState={currentState} className="w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 z-10" />
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={novaMessage}
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-[110%] left-1/2 -translate-x-1/2 w-80 md:w-[400px] bg-white text-black p-4 rounded-2xl rounded-tl-sm shadow-2xl text-center z-20"
+                            className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] sm:w-80 md:w-[400px] bg-white text-black p-3 sm:p-4 rounded-2xl rounded-tl-sm shadow-2xl text-center z-20"
                         >
                             <p className="font-medium text-[15px] leading-relaxed relative">{novaMessage}</p>
                         </motion.div>
@@ -344,7 +344,7 @@ export default function SpeakingPracticePage() {
                 </div>
             </main>
 
-            <footer className="fixed bottom-0 left-0 w-full p-8 bg-gradient-to-t from-[#080810] via-[#080810]/80 to-transparent flex items-end justify-center z-20">
+            <footer className="fixed bottom-0 left-0 w-full p-4 sm:p-6 md:p-8 bg-gradient-to-t from-[#080810] via-[#080810]/80 to-transparent flex items-end justify-center z-20">
                 {sessionComplete ? (
                     <button
                         onClick={() => router.push('/dashboard')}

@@ -96,7 +96,7 @@ export const ContinueLearningCard: FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Ready to start your journey?</h3>
                 <p className="text-zinc-400 text-sm mb-6 max-w-md">You haven&apos;t started any lessons yet. NOVA recommends beginning with &quot;Mastering Introductions&quot;.</p>
-                <GradientButton onClick={() => router.push('/learn')} className="px-8 py-4">
+                <GradientButton onClick={() => router.push('/learn')} className="px-8 py-4 min-h-[44px]">
                     Start Your First Lesson →
                 </GradientButton>
             </motion.div>
@@ -144,7 +144,7 @@ export const ContinueLearningCard: FC = () => {
                     </div>
                 )}
 
-                <GradientButton onClick={() => router.push(`/learn/${nextLesson.id}`)} className="w-full md:w-auto px-6 py-4 flex items-center gap-2 group">
+                <GradientButton onClick={() => router.push(`/learn/${nextLesson.id}`)} className="w-full md:w-auto px-6 py-4 min-h-[44px] flex items-center gap-2 group">
                     <PlayCircle className="w-5 h-5 group-hover:scale-110 transition-transform" /> {t("continue")}
                 </GradientButton>
             </div>

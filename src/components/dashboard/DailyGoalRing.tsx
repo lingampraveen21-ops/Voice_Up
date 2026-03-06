@@ -32,7 +32,7 @@ export const DailyGoalRing: FC = () => {
                 <Target className="w-5 h-5 text-zinc-500" />
             </div>
 
-            <div className="relative w-36 h-36 flex items-center justify-center z-10 mt-6">
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 flex items-center justify-center z-10 mt-6">
                 <svg className="w-full h-full transform -rotate-90">
                     {/* Track */}
                     <circle cx="72" cy="72" r={radius} className="fill-none stroke-white/5 stroke-[8]" />
