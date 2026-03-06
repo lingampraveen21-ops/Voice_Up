@@ -39,7 +39,7 @@ export default function SpeakingPracticePage() {
     } = useNovaStore()
 
     const { isSupported, startRecording: startListening, stopRecording: stopListening, error: micError } = useVoiceRecorder()
-    const { speak, stop: stopSpeaking } = useSpeechSynthesis()
+    const { speak, stop: stopSpeaking, voicesReady } = useSpeechSynthesis()
 
     const [profile, setProfile] = useState<SpeakingProfileData | null>(null)
     const [novaMessage, setNovaMessage] = useState("")
@@ -80,9 +80,9 @@ export default function SpeakingPracticePage() {
                 const trySpeak = () => {
                     const voices = window.speechSynthesis.getVoices()
                     if (voices.length > 0) {
-                        speak(greeting)
+                        speak(greeting, () => startListening())
                     } else {
-                        window.speechSynthesis.onvoiceschanged = () => speak(greeting)
+                        window.speechSynthesis.onvoiceschanged = () => speak(greeting, () => startListening())
                     }
                 }
                 trySpeak()
@@ -123,8 +123,12 @@ export default function SpeakingPracticePage() {
                     setNovaMessage(data.novaResponse)
                     addMessageToHistory({ role: 'nova', content: data.novaResponse })
 
-                    if (data.grammarMistake && data.correction) {
-                        setCorrection(data.correction)
+                    if (data.grammarMistake && data.correctionOriginal) {
+                        setCorrection({
+                            original: data.correctionOriginal,
+                            corrected: data.correctionCorrected,
+                            explanation: data.correctionExplanation
+                        })
                         setSessionScore(prev => Math.max(0, prev - 5))
                     } else {
                         setCorrection(null)
@@ -132,7 +136,13 @@ export default function SpeakingPracticePage() {
                     }
 
                     setExchangeCount(prev => prev + 1)
-                    speak(data.novaResponse)
+
+                    // Speak Nova's reply, then auto-restart mic for seamless conversation
+                    speak(data.novaResponse, () => {
+                        if (exchangeCount + 1 < MAX_EXCHANGES) {
+                            startListening()
+                        }
+                    })
 
                 } catch (error) {
                     console.error("Failed to generate NOVA response:", error)
@@ -230,7 +240,7 @@ export default function SpeakingPracticePage() {
                             setShowConsent(false)
                             const greeting = t("novaGreeting")
                             setNovaMessage(greeting)
-                            speak(greeting)
+                            speak(greeting, () => startListening())
                         }}
                         onCancel={() => router.push('/dashboard')}
                     />

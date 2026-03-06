@@ -108,24 +108,26 @@ export async function POST(req: Request) {
             throw new Error("Model returned empty response.")
         }
 
-        const flat = JSON.parse(responseText)
-
-        // Re-shape flattened correction back into the nested format the frontend expects
-        const parsedResponse = {
-            novaResponse: flat.novaResponse,
-            grammarMistake: flat.grammarMistake,
-            correction: flat.grammarMistake ? {
-                original: flat.correctionOriginal,
-                corrected: flat.correctionCorrected,
-                explanation: flat.correctionExplanation,
-            } : null,
-            score: flat.score,
+        let flat
+        try {
+            flat = JSON.parse(responseText)
+        } catch (parseErr) {
+            console.error("Failed to parse Gemini response:", responseText)
+            throw new Error("Gemini returned invalid JSON")
         }
 
-        return NextResponse.json(parsedResponse)
+        // Return flat fields directly — frontend reads correctionOriginal etc.
+        return NextResponse.json({
+            novaResponse: flat.novaResponse || "I'm sorry, I didn't catch that. Could you try again?",
+            grammarMistake: flat.grammarMistake || false,
+            correctionOriginal: flat.correctionOriginal || '',
+            correctionCorrected: flat.correctionCorrected || '',
+            correctionExplanation: flat.correctionExplanation || '',
+            score: flat.score ?? 85,
+        })
 
     } catch (error) {
-        console.error("NOVA API Route Error:", error)
+        console.error("NOVA API Route Error:", error instanceof Error ? error.message : error)
         return NextResponse.json({
             error: "Gemini API failed",
             details: error instanceof Error ? error.message : "Unknown server error"
