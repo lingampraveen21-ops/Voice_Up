@@ -70,13 +70,13 @@ export function Sidebar() {
                 </div>
             </div>
 
-            <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-raised border-t border-white/5 flex items-center justify-around z-50 px-1">
-                {NAV_ITEMS.slice(0, 5).map((item) => (
-                    <Link key={item.href} href={item.href} className="flex flex-col items-center min-h-[44px] min-w-[44px] justify-center">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-surface-raised border-t border-white/5 flex flex-wrap items-center justify-between gap-2 z-50 px-4 py-2 w-full max-w-full">
+                {NAV_ITEMS.map((item) => (
+                    <Link key={item.href} href={item.href} className="flex flex-col items-center min-h-[44px] min-w-[44px] justify-center px-1">
                         <div
                             className={cn(
                                 "p-2 rounded-full transition-colors",
-                                item.isAction ? "bg-secondary text-white -mt-5 h-12 w-12 flex items-center justify-center shadow-lg" : pathname === item.href ? "text-primary" : "text-muted-foreground"
+                                item.isAction ? "bg-secondary text-white h-10 w-10 flex items-center justify-center shadow-lg" : pathname === item.href ? "text-primary" : "text-muted-foreground"
                             )}
                         >
                             <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -84,6 +84,17 @@ export function Sidebar() {
                         {!item.isAction && <span className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 leading-tight truncate max-w-[56px] text-center">{item.name}</span>}
                     </Link>
                 ))}
+                <Link href={SETTINGS_ITEMS[0].href} className="flex flex-col items-center min-h-[44px] min-w-[44px] justify-center px-1">
+                    <div
+                        className={cn(
+                            "p-2 rounded-full transition-colors",
+                            pathname === SETTINGS_ITEMS[0].href ? "text-primary" : "text-muted-foreground"
+                        )}
+                    >
+                        <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 leading-tight truncate max-w-[56px] text-center">{SETTINGS_ITEMS[0].name}</span>
+                </Link>
             </div>
         </>
     );
