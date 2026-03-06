@@ -3,7 +3,47 @@ import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/gen
 
 export const dynamic = 'force-dynamic'
 
+// --- In-memory rate limiter (per-instance, serverless-safe) ---
+const RATE_LIMIT_MS = 3000
+const rateLimitMap = new Map<string, number>()
+
+// Periodically prune stale entries to prevent unbounded growth
+const PRUNE_INTERVAL_MS = 60_000
+let lastPrune = Date.now()
+function pruneRateLimitMap() {
+    const now = Date.now()
+    if (now - lastPrune < PRUNE_INTERVAL_MS) return
+    lastPrune = now
+    rateLimitMap.forEach((timestamp, key) => {
+        if (now - timestamp > RATE_LIMIT_MS * 2) rateLimitMap.delete(key)
+    })
+}
+
+// --- Request dedup: prevent duplicate Gemini calls for the same request ---
+const inflightRequests = new Set<string>()
+
+// --- Retry helper with exponential backoff ---
+async function callWithRetry<T>(fn: () => Promise<T>, maxRetries = 2): Promise<T> {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            return await fn()
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err)
+            const is429 = message.includes('429') || message.toLowerCase().includes('resource exhausted')
+            if (is429 && attempt < maxRetries) {
+                const delayMs = 1000 * Math.pow(2, attempt) // 1s, 2s
+                console.warn(`[NOVA] Gemini 429 — retry ${attempt + 1}/${maxRetries} after ${delayMs}ms`)
+                await new Promise(r => setTimeout(r, delayMs))
+                continue
+            }
+            throw err
+        }
+    }
+    throw new Error('Unreachable')
+}
+
 export async function POST(req: Request) {
+    let dedupKey = ''
     try {
         const { userMessage, conversationHistory, topic, userLevel, locale = 'en' } = await req.json()
 
@@ -11,8 +51,34 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "userMessage is required" }, { status: 400 })
         }
 
+        // --- Rate limiting ---
+        pruneRateLimitMap()
+        const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+        const lastRequest = rateLimitMap.get(clientIp) || 0
+        const elapsed = Date.now() - lastRequest
+        if (elapsed < RATE_LIMIT_MS) {
+            console.warn(`[NOVA] Rate limited IP ${clientIp} — ${elapsed}ms since last call`)
+            return NextResponse.json(
+                { error: 'Too many requests. Please wait a moment.' },
+                { status: 429 }
+            )
+        }
+        rateLimitMap.set(clientIp, Date.now())
+
+        // --- Dedup guard: reject if identical request is already in-flight ---
+        dedupKey = `${clientIp}:${userMessage.trim().slice(0, 100)}`
+        if (inflightRequests.has(dedupKey)) {
+            console.warn(`[NOVA] Duplicate in-flight request blocked: ${dedupKey}`)
+            return NextResponse.json(
+                { error: 'Duplicate request — still processing your previous message.' },
+                { status: 429 }
+            )
+        }
+        inflightRequests.add(dedupKey)
+
         const apiKey = process.env.GEMINI_API_KEY
         if (!apiKey) {
+            inflightRequests.delete(dedupKey)
             return NextResponse.json({ error: "Gemini API Key is missing. Check .env.local" }, { status: 500 })
         }
 
@@ -95,12 +161,14 @@ export async function POST(req: Request) {
             }
         })
 
-        const result = await model.generateContent({
-            contents: [
-                ...formattedHistory,
-                { role: 'user', parts: [{ text: userMessage }] }
-            ]
-        })
+        const result = await callWithRetry(() =>
+            model.generateContent({
+                contents: [
+                    ...formattedHistory,
+                    { role: 'user', parts: [{ text: userMessage }] }
+                ]
+            })
+        )
 
         const responseText = result.response.text()
         if (!responseText || responseText === '{}') {
@@ -115,6 +183,8 @@ export async function POST(req: Request) {
             throw new Error("Gemini returned invalid JSON")
         }
 
+        inflightRequests.delete(dedupKey)
+
         // Return flat fields directly — frontend reads correctionOriginal etc.
         return NextResponse.json({
             novaResponse: flat.novaResponse || "I'm sorry, I didn't catch that. Could you try again?",
@@ -126,10 +196,23 @@ export async function POST(req: Request) {
         })
 
     } catch (error) {
-        console.error("NOVA API Route Error:", error instanceof Error ? error.message : error)
+        if (dedupKey) inflightRequests.delete(dedupKey)
+
+        const message = error instanceof Error ? error.message : String(error)
+        const is429 = message.includes('429') || message.toLowerCase().includes('resource exhausted')
+
+        if (is429) {
+            console.warn('[NOVA] Gemini quota exhausted after retries')
+            return NextResponse.json(
+                { error: 'AI service is temporarily busy. Please try again in a moment.' },
+                { status: 429 }
+            )
+        }
+
+        console.error('NOVA API Route Error:', message)
         return NextResponse.json({
-            error: "Gemini API failed",
-            details: error instanceof Error ? error.message : "Unknown server error"
+            error: 'Gemini API failed',
+            details: message || 'Unknown server error'
         }, { status: 500 })
     }
 }

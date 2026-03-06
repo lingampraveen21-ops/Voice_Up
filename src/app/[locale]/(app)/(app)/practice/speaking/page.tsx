@@ -51,7 +51,10 @@ export default function SpeakingPracticePage() {
     const [showConsent, setShowConsent] = useState(false)
     const silenceTimer = useRef<NodeJS.Timeout | null>(null)
     const isProcessingRef = useRef(false)
+    const lastApiCallTime = useRef(0)
+    const processedTranscripts = useRef(new Set<string>())
     const MAX_EXCHANGES = 5
+    const MIN_API_INTERVAL_MS = 3000
 
     // 1. Initial Setup
     useEffect(() => {
@@ -96,76 +99,95 @@ export default function SpeakingPracticePage() {
         }
     }, []) // eslint-disable-line
 
-    // 2. Transmit to API when User stops talking
+    // 2. Transmit to API when User stops talking (debounced, deduplicated)
     useEffect(() => {
-        const processTranscript = async () => {
-            if (!isListening && transcript.trim().length > 0 && !isThinking && !isSpeaking) {
-                if (isProcessingRef.current) return
-                isProcessingRef.current = true
+        // Only proceed when user just stopped listening with a non-empty transcript
+        if (isListening || transcript.trim().length === 0 || isThinking || isSpeaking) return
+        if (isProcessingRef.current) return
+        if (sessionComplete) return
 
-                // Small delay to avoid rapid-fire requests
-                await new Promise(resolve => setTimeout(resolve, 500))
+        // Deduplicate: skip if we already processed this exact transcript
+        const trimmed = transcript.trim()
+        if (processedTranscripts.current.has(trimmed)) return
 
-                setThinking(true)
-                addMessageToHistory({ role: 'user', content: transcript })
-
-                if (silenceTimer.current) clearTimeout(silenceTimer.current)
-
-                try {
-                    const res = await fetch('/api/nova', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            userMessage: transcript,
-                            conversationHistory,
-                            topic,
-                            userLevel: profile?.cefr_level || "Beginner"
-                        })
-                    })
-
-                    if (!res.ok) throw new Error("API Route failed")
-                    const data = await res.json()
-
-                    setThinking(false)
-                    setNovaMessage(data.novaResponse)
-                    addMessageToHistory({ role: 'nova', content: data.novaResponse })
-
-                    if (data.grammarMistake && data.correctionOriginal) {
-                        setCorrection({
-                            original: data.correctionOriginal,
-                            corrected: data.correctionCorrected,
-                            explanation: data.correctionExplanation
-                        })
-                        setSessionScore(prev => Math.max(0, prev - 5))
-                    } else {
-                        setCorrection(null)
-                        setSessionScore(prev => Math.min(100, prev + 2))
-                    }
-
-                    setExchangeCount(prev => prev + 1)
-
-                    // Cancel any ongoing speech before speaking Nova's reply
-                    window.speechSynthesis.cancel()
-
-                    // Speak Nova's reply, then auto-restart mic for seamless conversation
-                    speak(data.novaResponse, () => {
-                        isProcessingRef.current = false
-                        if (exchangeCount + 1 < MAX_EXCHANGES) {
-                            startListening()
-                        }
-                    })
-
-                } catch (error) {
-                    console.error("Failed to generate NOVA response:", error)
-                    toast.error("NOVA is having trouble connecting to the network.")
-                    setThinking(false)
-                    isProcessingRef.current = false
-                }
-            }
+        // Rate limit: enforce minimum interval between API calls
+        const now = Date.now()
+        const timeSinceLastCall = now - lastApiCallTime.current
+        if (timeSinceLastCall < MIN_API_INTERVAL_MS) {
+            console.log(`[NOVA] Rate limited — ${timeSinceLastCall}ms since last call, need ${MIN_API_INTERVAL_MS}ms`)
+            return
         }
 
-        processTranscript()
-    }, [isListening, transcript, isThinking, isSpeaking, conversationHistory, topic, profile, addMessageToHistory, speak, t, setThinking, exchangeCount, startListening])
+        // Lock immediately to prevent any re-entry
+        isProcessingRef.current = true
+        processedTranscripts.current.add(trimmed)
+        lastApiCallTime.current = now
+
+        // Debounce: wait 1 second before actually calling
+        const debounceTimer = setTimeout(async () => {
+            console.log(`[NOVA] Sending API request — transcript: "${trimmed.slice(0, 50)}..."`)
+
+            setThinking(true)
+            addMessageToHistory({ role: 'user', content: trimmed })
+
+            if (silenceTimer.current) clearTimeout(silenceTimer.current)
+
+            try {
+                const res = await fetch('/api/nova', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userMessage: trimmed,
+                        conversationHistory,
+                        topic,
+                        userLevel: profile?.cefr_level || "Beginner"
+                    })
+                })
+
+                if (!res.ok) throw new Error("API Route failed")
+                const data = await res.json()
+
+                console.log('[NOVA] Response received successfully')
+
+                setThinking(false)
+                setNovaMessage(data.novaResponse)
+                addMessageToHistory({ role: 'nova', content: data.novaResponse })
+
+                if (data.grammarMistake && data.correctionOriginal) {
+                    setCorrection({
+                        original: data.correctionOriginal,
+                        corrected: data.correctionCorrected,
+                        explanation: data.correctionExplanation
+                    })
+                    setSessionScore(prev => Math.max(0, prev - 5))
+                } else {
+                    setCorrection(null)
+                    setSessionScore(prev => Math.min(100, prev + 2))
+                }
+
+                setExchangeCount(prev => prev + 1)
+
+                // Cancel any ongoing speech before speaking Nova's reply
+                window.speechSynthesis.cancel()
+
+                // Speak Nova's reply, then auto-restart mic for seamless conversation
+                speak(data.novaResponse, () => {
+                    isProcessingRef.current = false
+                    if (exchangeCount + 1 < MAX_EXCHANGES) {
+                        startListening()
+                    }
+                })
+
+            } catch (error) {
+                console.error("[NOVA] Failed to generate response:", error)
+                toast.error("NOVA is having trouble connecting to the network.")
+                setThinking(false)
+                isProcessingRef.current = false
+            }
+        }, 1000)
+
+        return () => clearTimeout(debounceTimer)
+    }, [isListening, transcript]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // 3. Silence Detection Logic
     useEffect(() => {
