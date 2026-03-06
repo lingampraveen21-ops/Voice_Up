@@ -96,7 +96,7 @@ function RoadmapTimeline({ data, onReset }: { data: RoadmapData, onReset: () => 
                                 <div className={`flex-1 p-5 md:p-6 rounded-2xl border transition-all
                                     ${isCompleted ? 'bg-emerald-500/5 border-emerald-500/15' :
                                         isCurrent ? 'bg-[#6c63ff]/10 border-[#6c63ff]/40 shadow-[0_0_24px_rgba(108,99,255,0.12)]' :
-                                            'bg-white/[0.02] border-white/5 opacity-40'}`}
+                                            'bg-white/[0.06] border-white/10 opacity-75'}`}
                                 >
                                     <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                                         <div className="flex items-center gap-2">
@@ -119,10 +119,10 @@ function RoadmapTimeline({ data, onReset }: { data: RoadmapData, onReset: () => 
                                             </span>
                                         )}
                                     </div>
-                                    <h3 className={`text-lg font-bold mb-1.5 ${isCompleted ? 'text-zinc-200' : isCurrent ? 'text-white' : 'text-zinc-500'}`}>
+                                    <h3 className={`text-lg font-bold mb-1.5 ${isCompleted ? 'text-zinc-200' : isCurrent ? 'text-white' : 'text-zinc-400'}`}>
                                         {step.title}
                                     </h3>
-                                    <p className={`text-sm leading-relaxed ${isCurrent ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                                    <p className={`text-sm leading-relaxed ${isCurrent ? 'text-zinc-300' : 'text-zinc-500'}`}>
                                         {step.description}
                                     </p>
                                     {isCurrent && (
