@@ -3,12 +3,32 @@ import { GoogleGenerativeAI, SchemaType, type ResponseSchema } from '@google/gen
 
 export const dynamic = 'force-dynamic'
 
+// Simple in-memory rate limiter
+const requestCounts = new Map<string, { count: number; resetTime: number }>()
+
 export async function POST(req: Request) {
     try {
         const { userMessage, conversationHistory, topic, userLevel, locale = 'en' } = await req.json()
 
         if (!userMessage) {
             return NextResponse.json({ error: "userMessage is required" }, { status: 400 })
+        }
+
+        const clientIp = req.headers.get('x-forwarded-for') || 'unknown'
+        const now = Date.now()
+        const windowMs = 60 * 1000 // 1 minute
+        const maxRequests = 8
+
+        const clientData = requestCounts.get(clientIp)
+        if (clientData && now < clientData.resetTime) {
+            if (clientData.count >= maxRequests) {
+                return NextResponse.json({
+                    error: 'Too many requests. Please wait a moment before speaking again.'
+                }, { status: 429 })
+            }
+            clientData.count++
+        } else {
+            requestCounts.set(clientIp, { count: 1, resetTime: now + windowMs })
         }
 
         const apiKey = process.env.GEMINI_API_KEY
@@ -86,7 +106,7 @@ export async function POST(req: Request) {
         })) || []
 
         const model = genAI.getGenerativeModel({
-            model: 'gemini-2.5-flash-lite',
+            model: 'gemini-2.5-flash',
             systemInstruction,
             generationConfig: {
                 responseMimeType: 'application/json',
