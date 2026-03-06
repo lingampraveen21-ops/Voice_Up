@@ -6,6 +6,8 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: Request) {
   try {
     const { userGoal, level } = await req.json()
+    console.log('=== ROADMAP CALLED WITH ===', { userGoal, level })
+    console.log('=== API KEY EXISTS ===', !!process.env.GEMINI_API_KEY)
 
     if (!userGoal) {
       return NextResponse.json({ error: 'userGoal is required' }, { status: 400 })
@@ -94,10 +96,17 @@ Rules:
     return NextResponse.json(parsed)
 
   } catch (error) {
-    console.error('Roadmap API Error:', error instanceof Error ? error.message : error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : 'No stack'
+    
+    console.error('=== ROADMAP ERROR START ===')
+    console.error('Message:', errorMessage)
+    console.error('Stack:', errorStack)
+    console.error('=== ROADMAP ERROR END ===')
+    
     return NextResponse.json({
       error: 'Gemini API failed',
-      details: error instanceof Error ? error.message : 'Unknown server error'
+      details: errorMessage
     }, { status: 500 })
   }
 }
