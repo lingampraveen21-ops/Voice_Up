@@ -45,37 +45,21 @@ export const ChallengeCard: FC = () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
 
-            // Fetch speaking sessions for the current week
-            const startOfWeek = new Date()
-            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()) // Sunday
-            startOfWeek.setHours(0, 0, 0, 0)
+            // Use profiles XP leaderboard (no RPC dependency)
+            const { data: leaders } = await supabase
+                .from('profiles')
+                .select('id, full_name, xp')
+                .order('xp', { ascending: false })
+                .limit(10)
 
-            const { data: sessionStats, error: statsError } = await supabase
-                .rpc('get_weekly_speaking_leaderboard', {
-                    week_start: startOfWeek.toISOString()
-                })
-
-            if (sessionStats) {
-                setTopUsers(sessionStats.slice(0, 3))
-                const rankIndex = sessionStats.findIndex((l: LeaderboardUser) => l.id === user.id)
+            if (leaders) {
+                setTopUsers(leaders.slice(0, 3).map(l => ({
+                    id: l.id,
+                    full_name: l.full_name,
+                    sessions_count: Math.floor(l.xp / 100)
+                })))
+                const rankIndex = leaders.findIndex((l) => l.id === user.id)
                 setMyRank(rankIndex !== -1 ? rankIndex + 1 : null)
-            } else if (statsError) {
-                // Fallback to simple XP if RPC doesn't exist yet
-                const { data: leaders } = await supabase
-                    .from('profiles')
-                    .select('id, full_name, xp')
-                    .order('xp', { ascending: false })
-                    .limit(10)
-
-                if (leaders) {
-                    setTopUsers(leaders.slice(0, 3).map(l => ({
-                        id: l.id,
-                        full_name: l.full_name,
-                        sessions_count: Math.floor(l.xp / 100)
-                    })))
-                    const rankIndex = leaders.findIndex((l) => l.id === user.id)
-                    setMyRank(rankIndex !== -1 ? rankIndex + 1 : null)
-                }
             }
         }
 

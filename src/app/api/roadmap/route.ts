@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { GoogleGenAI, Type, Schema } from '@google/genai'
+import { GoogleGenAI } from '@google/genai'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,64 +18,75 @@ export async function POST(req: Request) {
 
         const ai = new GoogleGenAI({ apiKey })
 
-        const systemInstruction = `
-You are NOVA, an expert English learning planner.
+        const today = new Date().toISOString().split('T')[0]
+
+        const prompt = `You are NOVA, an expert English learning planner.
 The user's goal: "${userGoal}"
 Their current CEFR level: ${level || 'unknown'}.
 
-Understand the user's intent from their natural language description.
-Extract: their specific goal, timeline, and daily commitment.
-Then generate a realistic day-by-day learning roadmap with exactly 7 major milestones/steps.
+Generate a realistic day-by-day learning roadmap with exactly 7 major milestones/steps.
 
-Return valid JSON matching the schema.
-`
+Return ONLY a valid JSON object with this exact format (no markdown, no explanation):
+{
+  "roadmap": [
+    {
+      "dayLabel": "Day 1-4",
+      "title": "Introduction to Professional Greetings",
+      "description": "Learn and practice formal greetings, self-introductions, and small talk for professional settings.",
+      "skill": "speaking",
+      "status": "not_started"
+    }
+  ],
+  "advice": "One sentence of motivational advice"
+}
 
-        // Reverting to the simpler Array schema which is proven to work in grade-writing/route.ts
-        const responseSchema: Schema = {
-            type: Type.OBJECT,
-            properties: {
-                roadmap: {
-                    type: Type.ARRAY,
-                    description: 'The 7 milestone steps',
-                    items: {
-                        type: Type.OBJECT,
-                        properties: {
-                            dayLabel: { type: Type.STRING },
-                            title: { type: Type.STRING },
-                            description: { type: Type.STRING },
-                            skill: { type: Type.STRING },
-                            status: { type: Type.STRING }
-                        },
-                        required: ['dayLabel', 'title', 'description', 'skill', 'status']
-                    }
-                },
-                advice: { type: Type.STRING, description: 'One sentence of motivational advice' }
-            },
-            required: ['roadmap', 'advice']
-        }
+Rules:
+- Generate exactly 7 milestones
+- Alternate skills between: speaking, listening, reading, writing, vocabulary, grammar
+- Match difficulty to CEFR level: ${level || 'A1'}
+- Focus on the user's goal: "${userGoal}"
+- First dayLabel starts from "${today}"
+- status should always be "not_started"
+- Keep descriptions under 2 sentences`
 
-        // Using gemini-1.5-flash for maximum stability with structured output
         const response = await ai.models.generateContent({
             model: 'gemini-1.5-flash',
-            contents: [{ role: 'user', parts: [{ text: userGoal }] }],
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
             config: {
-                systemInstruction,
-                responseMimeType: 'application/json',
-                responseSchema,
                 temperature: 0.7,
             }
         })
 
-        const responseText = response.text ?? '{}'
-        if (!responseText || responseText === '{}') {
+        const responseText = response.text ?? ''
+        if (!responseText) {
             throw new Error('Model returned empty response.')
         }
 
-        const parsed = JSON.parse(responseText)
+        // Clean markdown fences if present, then parse
+        const cleanText = responseText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
+
+        let parsed
+        try {
+            parsed = JSON.parse(cleanText)
+        } catch {
+            console.error('Failed to parse Gemini response:', responseText)
+            return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
+        }
+
+        // Ensure the response has the expected shape
+        if (!parsed.roadmap || !Array.isArray(parsed.roadmap)) {
+            // If Gemini returned a raw array, wrap it
+            if (Array.isArray(parsed)) {
+                parsed = { roadmap: parsed, advice: 'Stay consistent and practice daily!' }
+            } else {
+                return NextResponse.json({ error: 'Invalid roadmap structure from AI' }, { status: 500 })
+            }
+        }
+
         return NextResponse.json(parsed)
 
     } catch (error) {
-        console.error('Roadmap API Error:', error)
+        console.error('Roadmap API Error:', error instanceof Error ? error.message : error)
         return NextResponse.json({
             error: 'Gemini API failed',
             details: error instanceof Error ? error.message : 'Unknown server error'
