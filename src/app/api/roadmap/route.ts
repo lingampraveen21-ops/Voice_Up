@@ -53,20 +53,33 @@ Rules:
     const result = await model.generateContent(prompt)
     const responseText = result.response.text()
 
+    console.log('=== GEMINI RAW RESPONSE ===')
+    console.log(responseText)
+    console.log('=== END RESPONSE ===')
+
     if (!responseText) {
       throw new Error('Model returned empty response.')
     }
 
     const cleanText = responseText
-      .replace(/```json\s*/g, '')
-      .replace(/```\s*/g, '')
+      .replace(/```json\s*/gi, '')
+      .replace(/```\s*/gi, '')
+      .replace(/^\s*[\r\n]/gm, '')
       .trim()
+
+    // Try to extract JSON object if there's extra text around it
+    const jsonMatch = cleanText.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      console.error('No JSON object found in response:', cleanText)
+      return NextResponse.json({ error: 'No valid JSON in AI response' }, { status: 500 })
+    }
 
     let parsed
     try {
-      parsed = JSON.parse(cleanText)
-    } catch {
-      console.error('Failed to parse Gemini response:', responseText)
+      parsed = JSON.parse(jsonMatch[0])
+    } catch (parseError) {
+      console.error('JSON parse failed:', parseError)
+      console.error('Attempted to parse:', jsonMatch[0])
       return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
     }
 
