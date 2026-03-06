@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from 'framer-motion'
+import { motion, type TargetAndTransition } from 'framer-motion'
 
 export type NovaState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'happy' | 'correcting'
 
@@ -19,7 +19,7 @@ const STATE_CONFIG: Record<NovaState, { gradient: string; glow: string; emoji: s
 }
 
 // Framer Motion animation variants per state
-const avatarVariants: Record<NovaState, object> = {
+const avatarVariants: Record<NovaState, TargetAndTransition> = {
     idle: {
         scale: [1, 1.05, 1],
         transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
