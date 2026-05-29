@@ -6,6 +6,14 @@ import { routing } from './navigation';
 const intlMiddleware = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
+    const path = request.nextUrl.pathname;
+
+    // Let locale detection happen immediately for the bare root path.
+    // This avoids waiting on Supabase auth for requests that only need a locale redirect.
+    if (path === '/' || path === '') {
+        return intlMiddleware(request);
+    }
+
     // 1. Run next-intl middleware first to handle locale detection and redirection
     const response = intlMiddleware(request);
 

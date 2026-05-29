@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { GreetingCard } from '@/components/dashboard/GreetingCard'
@@ -43,12 +44,13 @@ const DashboardSkeleton = () => (
 )
 
 export default function DashboardPage() {
-    const supabase = createClient()
+    const router = useRouter()
     const [profile, setProfile] = useState<ProfileData | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchProfile = async () => {
+            const supabase = createClient()
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
                 const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
@@ -71,7 +73,7 @@ export default function DashboardPage() {
             setLoading(false)
         }
         fetchProfile()
-    }, [router, supabase])
+    }, [router])
 
     if (loading) return (
         <div className="min-h-screen bg-[#080810] text-white p-4 md:p-12">
