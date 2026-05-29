@@ -64,24 +64,6 @@ export async function updateSession(request: NextRequest, response?: NextRespons
             const dashboardUrl = new URL(`/${isLocalePath ? locale : 'en'}/dashboard`, request.url)
             return NextResponse.redirect(dashboardUrl)
         }
-
-        if (subPath !== '/onboarding' && !path.startsWith('/_next') && !subPath.startsWith('/auth/callback')) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('placement_done, language')
-                .eq('id', user.id)
-                .single()
-
-            // Handle onboarding redirect
-            if (profile && profile.placement_done === false) {
-                const onboardingUrl = new URL(`/${locale || 'en'}/onboarding`, request.url)
-                return NextResponse.redirect(onboardingUrl)
-            }
-
-            // Auto-detect language if profile has it and path doesn't match? 
-            // next-intl handles the cookie, so we usually don't need to force redirect here
-            // unless we want to sync the URL locale with the profile locale.
-        }
     }
 
     return supabaseResponse

@@ -21,7 +21,6 @@ interface ProfileData {
     streak_freeze_available: boolean
     last_active_date: string | null
     interview_date: string | null
-    placement_done: boolean | null
     xp: number
     voiceup_score: number
     reading_score: number
@@ -62,16 +61,12 @@ export default function DashboardPage() {
                     if (newProfile) setProfile(newProfile)
                 } else if (data) {
                     setProfile(data)
-                    if (data.placement_done === false) {
-                        router.replace('/onboarding')
-                        return
-                    }
                 }
             }
             setLoading(false)
         }
         fetchProfile()
-    }, [router, supabase])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     if (loading) return (
         <div className="min-h-screen bg-[#080810] text-white p-4 md:p-12">
