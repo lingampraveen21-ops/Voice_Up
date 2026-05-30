@@ -1,36 +1,21 @@
 import { type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
-import { updateSession } from './lib/supabase/middleware';
 import { routing } from './navigation';
 
-const intlMiddleware = createMiddleware(routing);
+const intlMiddleware = createMiddleware({
+  locales: routing.locales,
+  defaultLocale: routing.defaultLocale,
+  localePrefix: routing.localePrefix
+});
 
 export async function middleware(request: NextRequest) {
-    const path = request.nextUrl.pathname;
-
-    // Let locale detection happen immediately for the bare root path.
-    // This avoids waiting on Supabase auth for requests that only need a locale redirect.
-    if (path === '/' || path === '') {
-        return intlMiddleware(request);
-    }
-
-    // 1. Run next-intl middleware first to handle locale detection and redirection
-    const response = intlMiddleware(request);
-
-    // 2. Refresh the Supabase session and handle auth redirects
-    // We pass the response from intlMiddleware so it keeps the locale cookies/headers
-    return await updateSession(request, response);
+  // Just do i18n routing, skip Supabase auth check in middleware
+  // Auth will be checked on individual pages instead
+  return intlMiddleware(request);
 }
 
 export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         */
-        '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-    ],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).+)',
+  ],
 };
