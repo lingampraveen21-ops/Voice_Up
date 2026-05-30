@@ -19,20 +19,20 @@ const config = {
 		},
 		extend: {
 			colors: {
-				background: "#080810",
+				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
-				surface: "#0f0f1a",
-				"surface-raised": "#16162a",
+				surface: "hsl(var(--surface))",
+				"surface-raised": "hsl(var(--surface-raised))",
 				primary: {
-					DEFAULT: "#6c63ff",
+					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
 				},
 				secondary: {
-					DEFAULT: "#ff6584",
+					DEFAULT: "hsl(var(--secondary))",
 					foreground: "hsl(var(--secondary-foreground))",
 				},
 				success: {
-					DEFAULT: "#4ecca3",
+					DEFAULT: "hsl(var(--success))",
 				},
 				warning: {
 					DEFAULT: "#ffd166",

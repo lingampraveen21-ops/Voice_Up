@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Volume2, Play, Moon, Sun, Clock, EyeOff } from "lucide-react"
 import { Skeleton } from "@/components/ui/Skeleton"
+import { useTheme } from "next-themes"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,6 +32,7 @@ export default function PreferencesTab() {
     const currentLocale = useLocale()
     const router = useRouter()
     const pathname = usePathname()
+    const { theme: nextTheme, setTheme: setNextTheme } = useTheme()
 
     const [theme, setTheme] = useState("dark")
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
@@ -57,9 +59,17 @@ export default function PreferencesTab() {
         }
     })
 
+    // Sync local state with next-themes on mount
+    useEffect(() => {
+        if (nextTheme) setTheme(nextTheme)
+    }, [nextTheme])
+
     useEffect(() => {
         if (profile) {
-            if (profile.theme) setTheme(profile.theme)
+            if (profile.theme) {
+                setTheme(profile.theme)
+                setNextTheme(profile.theme)  // Sync next-themes with DB value
+            }
             if (profile.nova_voice) setSelectedVoiceURI(profile.nova_voice)
             if (profile.reminder_enabled !== undefined) setReminderOn(profile.reminder_enabled)
             if (profile.reminder_time) setReminderTime(profile.reminder_time)
@@ -100,12 +110,8 @@ export default function PreferencesTab() {
             // LocalStorage for Reduce Motion
             localStorage.setItem("reduceMotion", String(reduceMotion))
 
-            // Apply theme
-            if (theme === "light") {
-                document.documentElement.classList.remove("dark")
-            } else {
-                document.documentElement.classList.add("dark")
-            }
+            // Apply theme via next-themes (handles class + localStorage automatically)
+            setNextTheme(theme)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["profile"] })
