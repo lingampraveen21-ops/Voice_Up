@@ -59,10 +59,6 @@ export default function PreferencesTab() {
         }
     })
 
-    // Sync local state with next-themes on mount
-    useEffect(() => {
-        if (nextTheme) setTheme(nextTheme)
-    }, [nextTheme])
 
     useEffect(() => {
         if (profile) {
@@ -190,8 +186,8 @@ export default function PreferencesTab() {
                         <label className="text-zinc-400 text-sm font-medium mb-3 block">Theme</label>
                         <div className="grid grid-cols-2 gap-4">
                             <button
-                                onClick={() => setTheme("dark")}
-                                className={`p-4 rounded-xl border flex items-center justify-center gap-3 transition-all ${theme === "dark"
+                                onClick={() => { setTheme("dark"); setNextTheme("dark") }}
+                                className={`p-4 rounded-xl border flex items-center justify-center gap-3 transition-all ${(nextTheme ?? theme) === "dark"
                                     ? "border-[#6c63ff] bg-[#6c63ff]/10 text-white shadow-[0_0_15px_rgba(108,99,255,0.2)]"
                                     : "border-white/10 hover:bg-white/5 text-zinc-400"
                                     }`}
@@ -200,8 +196,8 @@ export default function PreferencesTab() {
                                 <span className="font-bold">Dark (Default)</span>
                             </button>
                             <button
-                                onClick={() => setTheme("light")}
-                                className={`p-4 rounded-xl border flex items-center justify-center gap-3 transition-all ${theme === "light"
+                                onClick={() => { setTheme("light"); setNextTheme("light") }}
+                                className={`p-4 rounded-xl border flex items-center justify-center gap-3 transition-all ${(nextTheme ?? theme) === "light"
                                     ? "border-[#6c63ff] bg-[#6c63ff]/10 text-white shadow-[0_0_15px_rgba(108,99,255,0.2)]"
                                     : "border-white/10 hover:bg-white/5 text-zinc-400"
                                     }`}
